@@ -1,13 +1,25 @@
-import { useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useState } from "react";
 import ProductCard from "../components/ProductCard.jsx";
 import { productCategories } from "../data/products.js";
 import { useCart } from "../context/CartContext.jsx";
+import { takeBrowseScrollPosition } from "../utils/browseScroll.js";
 import "./BrowseDeals.css";
 
 export default function BrowseDeals() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All categories");
   const { inventory } = useCart();
+
+  useLayoutEffect(() => {
+    const scrollY = takeBrowseScrollPosition();
+    if (scrollY === null) return undefined;
+
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ top: scrollY, behavior: "auto" });
+      });
+    });
+  }, []);
 
   const filteredProducts = useMemo(() => {
     const searchTerm = search.trim().toLowerCase();
