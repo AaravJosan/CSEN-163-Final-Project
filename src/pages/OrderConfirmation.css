@@ -6,10 +6,10 @@
 
 .confirmation-page {
   padding: clamp(1.5rem, 5vw, 3rem);
-  border: 1px solid #e3e0d7;
+  border: 1px solid #d0d5d9;
   border-radius: 1rem;
   background: #fff;
-  color: #242a24;
+  color: #425766;
   text-align: center;
 }
 
@@ -20,26 +20,26 @@
   place-items: center;
   margin: 0 auto 1rem;
   border-radius: 50%;
-  background: #eaf0e8;
-  color: #31583d;
+  background: #f7edef;
+  color: #a32035;
   font-size: 1.7rem;
   font-weight: 700;
 }
 
 .confirmation-page .eyebrow {
-  color: #687368;
+  color: #758592;
 }
 
 .confirmation-page h1 {
   margin: 0;
-  color: #31583d;
+  color: #a32035;
   font-size: clamp(2rem, 5vw, 2.75rem);
   letter-spacing: -0.04em;
 }
 
 .confirmation-intro {
   margin: 0.7rem 0 1.5rem;
-  color: #566056;
+  color: #425766;
   line-height: 1.6;
 }
 
@@ -47,20 +47,20 @@
   display: grid;
   gap: 0.45rem;
   padding: 1.2rem;
-  border: 1px dashed #b6c8b3;
+  border: 1px dashed #d2a4ac;
   border-radius: 0.7rem;
-  background: #f3f7f1;
+  background: #fdf7f7;
 }
 
 .order-code-card span {
-  color: #566256;
+  color: #425766;
   font-size: 0.85rem;
 }
 
 .order-code-card strong {
   display: block;
   overflow-wrap: anywhere;
-  color: #24452f;
+  color: #862633;
   font-size: clamp(1.2rem, 5vw, 2rem);
   letter-spacing: 0.06em;
   line-height: 1.4;
@@ -72,7 +72,7 @@
   gap: 0.75rem;
   margin: 1.25rem 0;
   padding: 1rem 0;
-  border-bottom: 1px solid #eeece6;
+  border-bottom: 1px solid #efeeec;
 }
 
 .confirmation-info div {
@@ -82,12 +82,12 @@
 }
 
 .confirmation-info span {
-  color: #687368;
+  color: #758592;
   font-size: 0.78rem;
 }
 
 .confirmation-info strong {
-  color: #293a2d;
+  color: #425766;
   font-size: 0.9rem;
   line-height: 1.45;
 }
@@ -98,7 +98,7 @@
 
 .confirmation-items h2 {
   margin: 0 0 0.75rem;
-  color: #293a2d;
+  color: #425766;
   font-size: 1.05rem;
 }
 
@@ -108,8 +108,8 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.65rem 0;
-  border-top: 1px solid #eeece6;
-  color: #424a42;
+  border-top: 1px solid #efeeec;
+  color: #425766;
   font-size: 0.9rem;
 }
 
@@ -117,12 +117,12 @@
   width: 48px;
   height: 42px;
   border-radius: 0.35rem;
-  background: #eceee9;
+  background: #efeeec;
   object-fit: cover;
 }
 
 .confirmation-item strong {
-  color: #293a2d;
+  color: #425766;
   white-space: nowrap;
 }
 
@@ -141,9 +141,9 @@
   align-items: center;
   justify-content: center;
   padding: 0.65rem 1rem;
-  border: 1px solid #31583d;
+  border: 1px solid #a32035;
   border-radius: 0.5rem;
-  background: #31583d;
+  background: #a32035;
   color: #fff;
   font-weight: 600;
   text-decoration: none;
@@ -151,15 +151,15 @@
 
 .confirmation-orders-link {
   background: #fff;
-  color: #31583d;
+  color: #a32035;
 }
 
 .confirmation-empty > p:not(.eyebrow) {
-  color: #687368;
+  color: #758592;
 }
 
 .orders-page {
-  color: #242a24;
+  color: #425766;
 }
 
 .order-history-list {
@@ -169,14 +169,14 @@
 
 .order-history-card {
   padding: 1rem 1.2rem;
-  border: 1px solid #e3e0d7;
+  border: 1px solid #d0d5d9;
   border-radius: 0.7rem;
   background: #fff;
   text-decoration: none;
 }
 
 .order-history-card:hover {
-  border-color: #b6c8b3;
+  border-color: #d2a4ac;
 }
 
 .order-history-top,
@@ -190,12 +190,12 @@
 
 .order-history-top strong {
   overflow-wrap: anywhere;
-  color: #31583d;
+  color: #a32035;
 }
 
 .order-history-top span,
 .order-history-bottom {
-  color: #687368;
+  color: #758592;
   font-size: 0.85rem;
 }
 
@@ -205,16 +205,16 @@
 
 .orders-empty {
   padding: 2rem;
-  border: 1px dashed #c9cec5;
+  border: 1px dashed #b5b1ac;
   border-radius: 0.75rem;
   background: #fff;
-  color: #687368;
+  color: #758592;
   text-align: center;
 }
 
 .orders-empty h2 {
   margin: 0 0 0.5rem;
-  color: #293a2d;
+  color: #425766;
 }
 
 .orders-empty p {

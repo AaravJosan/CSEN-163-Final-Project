@@ -1,7 +1,7 @@
 .product-card {
   position: relative;
   overflow: hidden;
-  border: 1px solid #e3e0d7;
+  border: 1px solid #d0d5d9;
   border-radius: 0.75rem;
   background: #fff;
   transition:
@@ -11,17 +11,17 @@
 
 .product-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgb(38 48 38 / 8%);
+  box-shadow: 0 8px 20px rgb(42 55 63 / 8%);
 }
 
 .product-card.expiring {
-  border-color: #e5c985;
+  border-color: #ffb600;
 }
 
 .product-card-image-link {
   display: block;
   overflow: hidden;
-  background: #eceee9;
+  background: #efeeec;
   aspect-ratio: 1.55;
 }
 
@@ -43,8 +43,8 @@
   left: 0.7rem;
   padding: 0.35rem 0.6rem;
   border-radius: 99px;
-  background: #fff2d6;
-  color: #714c0c;
+  background: #fff8e6;
+  color: #425766;
   font-size: 0.72rem;
   font-weight: 700;
 }
@@ -55,7 +55,7 @@
 
 .product-category {
   margin: 0 0 0.4rem;
-  color: #687368;
+  color: #758592;
   font-size: 0.75rem;
   font-weight: 600;
 }
@@ -68,12 +68,12 @@
 }
 
 .product-card h3 a {
-  color: #28372b;
+  color: #425766;
   text-decoration: none;
 }
 
 .product-card h3 a:hover {
-  color: #31583d;
+  color: #a32035;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -86,13 +86,13 @@
 }
 
 .discounted-price {
-  color: #31583d;
+  color: #a32035;
   font-size: 1.2rem;
   font-weight: 700;
 }
 
 .original-price {
-  color: #7a8078;
+  color: #758592;
   font-size: 0.85rem;
   text-decoration: line-through;
 }
@@ -102,8 +102,8 @@
   gap: 0.4rem;
   margin-top: 0.85rem;
   padding-top: 0.75rem;
-  border-top: 1px solid #eeece6;
-  color: #687368;
+  border-top: 1px solid #efeeec;
+  color: #758592;
   font-size: 0.75rem;
 }
 

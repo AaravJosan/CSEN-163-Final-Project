@@ -4,28 +4,28 @@
 }
 
 .browse-page {
-  --green: #31583d;
-  --muted-green: #687368;
-  --border: #e3e0d7;
-  color: #242a24;
+  --brand-red: #a32035;
+  --stone: #758592;
+  --border: #d0d5d9;
+  color: #425766;
 }
 
 .deals-intro {
   padding: 2.5rem 2.75rem;
-  border: 1px solid #e1e6dc;
+  border: 1px solid #ead9dc;
   border-radius: 1rem;
   background:
     radial-gradient(ellipse at 88% 20%, rgb(255 255 255 / 55%), transparent 32%),
-    #eaf0e8;
+    #f7edef;
 }
 
 .deals-intro .eyebrow {
-  color: var(--green);
+  color: var(--brand-red);
 }
 
 .deals-intro h1 {
   margin: 0;
-  color: var(--green);
+  color: var(--brand-red);
   font-size: clamp(2.2rem, 5vw, 3.4rem);
   letter-spacing: -0.045em;
 }
@@ -33,7 +33,7 @@
 .deals-intro > p:last-child {
   max-width: 34rem;
   margin: 0.75rem 0 0;
-  color: #485548;
+  color: #425766;
   font-size: 1.05rem;
   line-height: 1.65;
 }
@@ -61,7 +61,7 @@
 }
 
 .search-icon {
-  color: #687368;
+  color: #758592;
   font-size: 1.6rem;
   line-height: 1;
 }
@@ -72,18 +72,18 @@
   border: 0;
   outline: 0;
   background: transparent;
-  color: #242a24;
+  color: #425766;
   font: inherit;
 }
 
 .search-field input::placeholder {
-  color: #858b83;
+  color: #758592;
 }
 
 .search-field:focus-within,
 .category-field:focus-within {
-  border-color: #63866a;
-  box-shadow: 0 0 0 3px rgb(49 88 61 / 12%);
+  border-color: #a32035;
+  box-shadow: 0 0 0 3px rgb(163 32 53 / 12%);
 }
 
 .category-field {
@@ -97,7 +97,7 @@
 
 .results-count {
   margin: 0 0 2rem;
-  color: var(--muted-green);
+  color: var(--stone);
   font-size: 0.9rem;
 }
 
@@ -119,7 +119,7 @@
 
 .section-heading h2 {
   margin: 0;
-  color: #293a2d;
+  color: #425766;
   font-size: 1.65rem;
   letter-spacing: -0.025em;
 }
@@ -127,8 +127,8 @@
 .section-count {
   padding: 0.35rem 0.7rem;
   border-radius: 99px;
-  background: #eceee9;
-  color: #566256;
+  background: #efeeec;
+  color: #425766;
   font-size: 0.8rem;
   white-space: nowrap;
 }
@@ -141,15 +141,15 @@
 
 .empty-results {
   padding: 3.5rem 1rem;
-  border: 1px dashed #c9cec5;
+  border: 1px dashed #b5b1ac;
   border-radius: 0.75rem;
-  color: var(--muted-green);
+  color: var(--stone);
   text-align: center;
 }
 
 .empty-results h2 {
   margin: 0 0 0.5rem;
-  color: #293a2d;
+  color: #425766;
   font-size: 1.25rem;
 }
 

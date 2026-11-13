@@ -6,19 +6,19 @@
 
 .staff-inventory-page,
 .staff-orders-page {
-  color: #242a24;
+  color: #425766;
 }
 
 .staff-inventory-page h1,
 .staff-orders-page h1 {
   margin: 0 0 0.6rem;
-  color: #31583d;
+  color: #a32035;
   font-size: clamp(2rem, 4vw, 2.6rem);
 }
 
 .staff-page-intro {
   margin: 0 0 1.25rem;
-  color: #687368;
+  color: #758592;
   line-height: 1.55;
 }
 
@@ -34,7 +34,7 @@
   align-items: center;
   gap: 1rem;
   padding: 0.8rem;
-  border: 1px solid #e3e0d7;
+  border: 1px solid #d0d5d9;
   border-radius: 0.65rem;
   background: #fff;
 }
@@ -43,26 +43,26 @@
   width: 72px;
   height: 62px;
   border-radius: 0.4rem;
-  background: #eceee9;
+  background: #efeeec;
   object-fit: cover;
 }
 
 .staff-inventory-item h2 {
   margin: 0;
-  color: #293a2d;
+  color: #425766;
   font-size: 0.95rem;
 }
 
 .staff-inventory-item p {
   margin: 0.4rem 0 0;
-  color: #687368;
+  color: #758592;
   font-size: 0.8rem;
 }
 
 .staff-inventory-stock {
   display: grid;
   gap: 0.2rem;
-  color: #31583d;
+  color: #a32035;
   text-align: center;
 }
 
@@ -72,27 +72,27 @@
 
 .staff-inventory-stock span,
 .staff-inventory-price {
-  color: #566056;
+  color: #425766;
   font-size: 0.8rem;
 }
 
 .staff-inventory-price {
-  color: #31583d;
+  color: #a32035;
   text-align: right;
 }
 
 .staff-orders-empty {
   padding: 2rem;
-  border: 1px dashed #c9cec5;
+  border: 1px dashed #b5b1ac;
   border-radius: 0.75rem;
   background: #fff;
-  color: #687368;
+  color: #758592;
   text-align: center;
 }
 
 .staff-orders-empty h2 {
   margin: 0 0 0.5rem;
-  color: #293a2d;
+  color: #425766;
 }
 
 .staff-orders-empty p {
@@ -101,7 +101,7 @@
 
 .staff-order-card {
   padding: 1rem 1.2rem;
-  border: 1px solid #e3e0d7;
+  border: 1px solid #d0d5d9;
   border-radius: 0.7rem;
   background: #fff;
 }
@@ -116,17 +116,17 @@
 .staff-order-heading h2 {
   margin: 0.2rem 0 0;
   overflow-wrap: anywhere;
-  color: #31583d;
+  color: #a32035;
   font-size: clamp(0.9rem, 3vw, 1.15rem);
   letter-spacing: 0.03em;
 }
 
 .staff-order-heading > strong {
-  color: #293a2d;
+  color: #425766;
 }
 
 .staff-order-label {
-  color: #687368;
+  color: #758592;
   font-size: 0.75rem;
 }
 
@@ -135,13 +135,13 @@
   gap: 0.4rem;
   margin: 1rem 0;
   padding-left: 1.2rem;
-  color: #424a42;
+  color: #425766;
   font-size: 0.9rem;
 }
 
 .staff-order-card > p {
   margin: 0;
-  color: #687368;
+  color: #758592;
   font-size: 0.85rem;
 }
 

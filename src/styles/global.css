@@ -1,7 +1,15 @@
 :root {
+  --scu-red: #a32035;
+  --scu-red-dark: #862633;
+  --scu-stone: #758592;
+  --scu-stone-dark: #425766;
+  --scu-paper: #f8f3e5;
+  --scu-neutral: #efeeec;
+  --scu-red-soft: #f7edef;
+  --scu-border: #d0d5d9;
   font-family: Arial, Helvetica, sans-serif;
-  color: #242a24;
-  background: #f6f3eb;
+  color: var(--scu-stone-dark);
+  background: var(--scu-paper);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
@@ -27,11 +35,11 @@ a {
   gap: 1.5rem;
   padding: 1rem 2rem;
   background: #fff;
-  border-bottom: 1px solid #e3e0d7;
+  border-bottom: 1px solid var(--scu-border);
 }
 
 .brand {
-  color: #31583d;
+  color: var(--scu-red);
   font-size: 1.25rem;
   font-weight: 700;
   text-decoration: none;
@@ -48,15 +56,15 @@ a {
 .nav-link {
   padding: 0.5rem 0.65rem;
   border-radius: 0.35rem;
-  color: #424a42;
+  color: var(--scu-stone-dark);
   font-size: 0.9rem;
   text-decoration: none;
 }
 
 .nav-link:hover,
 .nav-link.active {
-  color: #24452f;
-  background: #eaf0e8;
+  color: var(--scu-red-dark);
+  background: var(--scu-red-soft);
 }
 
 .page-content {
@@ -66,14 +74,14 @@ a {
 
 .placeholder-page {
   padding: 2rem;
-  border: 1px solid #e3e0d7;
+  border: 1px solid var(--scu-border);
   border-radius: 0.75rem;
   background: #fff;
 }
 
 .placeholder-page h1 {
   margin: 0 0 0.75rem;
-  color: #31583d;
+  color: var(--scu-red);
 }
 
 .placeholder-page p {
@@ -82,7 +90,7 @@ a {
 
 .eyebrow {
   margin: 0 0 0.5rem;
-  color: #687368;
+  color: var(--scu-stone);
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -91,7 +99,7 @@ a {
 
 .coming-soon {
   margin-top: 2rem;
-  color: #687368;
+  color: var(--scu-stone);
   font-size: 0.9rem;
 }
 
