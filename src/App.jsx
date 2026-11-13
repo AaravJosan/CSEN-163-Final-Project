@@ -20,9 +20,12 @@ export default function App() {
           <Route path="/" element={<Navigate to="/deals" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/deals" element={<BrowseDeals />} />
-          <Route path="/products/:productId" element={<ProductDetails />} />
+          <Route path="/products/:id" element={<ProductDetails />} />
           <Route path="/cart" element={<Cart />} />
-          <Route path="/order-confirmation" element={<OrderConfirmation />} />
+          <Route
+            path="/order-confirmation/:orderId?"
+            element={<OrderConfirmation />}
+          />
           <Route path="/orders" element={<MyOrders />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/staff/inventory" element={<StaffInventory />} />

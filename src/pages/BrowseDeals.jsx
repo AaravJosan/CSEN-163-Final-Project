@@ -1,16 +1,18 @@
 import { useMemo, useState } from "react";
 import ProductCard from "../components/ProductCard.jsx";
-import products, { productCategories } from "../data/products.js";
+import { productCategories } from "../data/products.js";
+import { useCart } from "../context/CartContext.jsx";
 import "./BrowseDeals.css";
 
 export default function BrowseDeals() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All categories");
+  const { inventory } = useCart();
 
   const filteredProducts = useMemo(() => {
     const searchTerm = search.trim().toLowerCase();
 
-    return products.filter((product) => {
+    return inventory.filter((product) => {
       const matchesCategory =
         category === "All categories" || product.category === category;
       const matchesSearch =
@@ -21,7 +23,7 @@ export default function BrowseDeals() {
 
       return matchesCategory && matchesSearch;
     });
-  }, [category, search]);
+  }, [category, inventory, search]);
 
   const expiringProducts = filteredProducts.filter((product) => product.expiringSoon);
   const otherProducts = filteredProducts.filter((product) => !product.expiringSoon);

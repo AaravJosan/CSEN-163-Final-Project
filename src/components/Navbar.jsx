@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import { useCart } from "../context/CartContext.jsx";
 
 const links = [
   { to: "/deals", label: "Browse Deals" },
@@ -12,6 +13,8 @@ const links = [
 ];
 
 export default function Navbar() {
+  const { cartCount } = useCart();
+
   return (
     <header className="site-header">
       <NavLink className="brand" to="/deals">
@@ -24,7 +27,9 @@ export default function Navbar() {
             className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}
             to={link.to}
           >
-            {link.label}
+            {link.to === "/cart" && cartCount > 0
+              ? `${link.label} (${cartCount})`
+              : link.label}
           </NavLink>
         ))}
       </nav>
