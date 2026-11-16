@@ -2,7 +2,18 @@
 
 A web app for SCU students to find and reserve discounted food from the Cellar before it expires. The goal is less waste from unsold food and cheaper meals for students. CSEN-163 final project.
 
-**Status:** design phase. Wireframes and user research are in progress; no app code yet.
+**Status:** initial frontend structure and page navigation are set up.
+
+## Run locally
+
+```sh
+npm install
+npm run dev
+```
+
+The app uses React Router for the placeholder pages. Shared UI components are in
+`src/components`, page components are in `src/pages`, and the `data`, `styles`,
+and `services` folders are ready for future work.
 
 ## How it works
 

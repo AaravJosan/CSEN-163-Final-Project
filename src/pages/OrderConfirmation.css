@@ -1,0 +1,234 @@
+.page-content:has(.confirmation-page),
+.page-content:has(.orders-page) {
+  width: min(100% - 2rem, 760px);
+  margin: 2rem auto 4rem;
+}
+
+.confirmation-page {
+  padding: clamp(1.5rem, 5vw, 3rem);
+  border: 1px solid #d0d5d9;
+  border-radius: 1rem;
+  background: #fff;
+  color: #425766;
+  text-align: center;
+}
+
+.confirmation-success-mark {
+  display: grid;
+  width: 3.25rem;
+  height: 3.25rem;
+  place-items: center;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  background: #f7edef;
+  color: #a32035;
+  font-size: 1.7rem;
+  font-weight: 700;
+}
+
+.confirmation-page .eyebrow {
+  color: #758592;
+}
+
+.confirmation-page h1 {
+  margin: 0;
+  color: #a32035;
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  letter-spacing: -0.04em;
+}
+
+.confirmation-intro {
+  margin: 0.7rem 0 1.5rem;
+  color: #425766;
+  line-height: 1.6;
+}
+
+.order-code-card {
+  display: grid;
+  gap: 0.45rem;
+  padding: 1.2rem;
+  border: 1px dashed #d2a4ac;
+  border-radius: 0.7rem;
+  background: #fdf7f7;
+}
+
+.order-code-card span {
+  color: #425766;
+  font-size: 0.85rem;
+}
+
+.order-code-card strong {
+  display: block;
+  overflow-wrap: anywhere;
+  color: #862633;
+  font-size: clamp(1.2rem, 5vw, 2rem);
+  letter-spacing: 0.06em;
+  line-height: 1.4;
+}
+
+.confirmation-info {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+  padding: 1rem 0;
+  border-bottom: 1px solid #efeeec;
+}
+
+.confirmation-info div {
+  display: grid;
+  align-content: start;
+  gap: 0.4rem;
+}
+
+.confirmation-info span {
+  color: #758592;
+  font-size: 0.78rem;
+}
+
+.confirmation-info strong {
+  color: #425766;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.confirmation-items {
+  text-align: left;
+}
+
+.confirmation-items h2 {
+  margin: 0 0 0.75rem;
+  color: #425766;
+  font-size: 1.05rem;
+}
+
+.confirmation-item {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0;
+  border-top: 1px solid #efeeec;
+  color: #425766;
+  font-size: 0.9rem;
+}
+
+.confirmation-item img {
+  width: 48px;
+  height: 42px;
+  border-radius: 0.35rem;
+  background: #efeeec;
+  object-fit: cover;
+}
+
+.confirmation-item strong {
+  color: #425766;
+  white-space: nowrap;
+}
+
+.confirmation-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.65rem;
+  margin-top: 1.5rem;
+}
+
+.confirmation-browse-link,
+.confirmation-orders-link {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1rem;
+  border: 1px solid #a32035;
+  border-radius: 0.5rem;
+  background: #a32035;
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.confirmation-orders-link {
+  background: #fff;
+  color: #a32035;
+}
+
+.confirmation-empty > p:not(.eyebrow) {
+  color: #758592;
+}
+
+.orders-page {
+  color: #425766;
+}
+
+.order-history-list {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.order-history-card {
+  padding: 1rem 1.2rem;
+  border: 1px solid #d0d5d9;
+  border-radius: 0.7rem;
+  background: #fff;
+  text-decoration: none;
+}
+
+.order-history-card:hover {
+  border-color: #d2a4ac;
+}
+
+.order-history-top,
+.order-history-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.order-history-top strong {
+  overflow-wrap: anywhere;
+  color: #a32035;
+}
+
+.order-history-top span,
+.order-history-bottom {
+  color: #758592;
+  font-size: 0.85rem;
+}
+
+.order-history-bottom {
+  margin-top: 0.6rem;
+}
+
+.orders-empty {
+  padding: 2rem;
+  border: 1px dashed #b5b1ac;
+  border-radius: 0.75rem;
+  background: #fff;
+  color: #758592;
+  text-align: center;
+}
+
+.orders-empty h2 {
+  margin: 0 0 0.5rem;
+  color: #425766;
+}
+
+.orders-empty p {
+  margin: 0 0 1rem;
+}
+
+@media (max-width: 600px) {
+  .page-content:has(.confirmation-page),
+  .page-content:has(.orders-page) {
+    margin: 1rem auto 2rem;
+  }
+
+  .confirmation-info {
+    grid-template-columns: 1fr;
+    text-align: left;
+  }
+}
