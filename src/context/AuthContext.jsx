@@ -102,7 +102,7 @@ export function AuthProvider({ children }) {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/login`,
+        redirectTo: `${window.location.origin}${import.meta.env.BASE_URL}login`,
         // Shows SCU Google accounts first in the account picker.
         queryParams: { hd: "scu.edu", prompt: "select_account" },
       },
