@@ -1,10 +1,27 @@
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Navigate, useLocation } from "react-router-dom";
 import leafIcon from "../assets/icons/logo-leaf-green.svg";
 import FoodTile from "../components/FoodTile.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 import "./Login.css";
 
 export default function Login() {
-  const navigate = useNavigate();
+  const { user, profile, loading, authError, signInWithGoogle } = useAuth();
+  const location = useLocation();
+  const [redirecting, setRedirecting] = useState(false);
+
+  if (user && profile) {
+    return <Navigate to={location.state?.from ?? "/deals"} replace />;
+  }
+
+  async function handleSignIn() {
+    setRedirecting(true);
+    await signInWithGoogle();
+    // On success the browser leaves for Google; this only runs if it failed.
+    setRedirecting(false);
+  }
+
+  const busy = loading || redirecting;
 
   return (
     <div className="login-page">
@@ -38,17 +55,27 @@ export default function Login() {
             Sign in with your SCU account to see today’s deals and your dining
             points.
           </p>
+          {authError && (
+            <p className="form-error" role="alert">
+              {authError}
+            </p>
+          )}
           <button
             type="button"
             className="button button--primary button--block"
-            onClick={() => navigate("/deals")}
+            onClick={handleSignIn}
+            disabled={busy}
           >
-            Sign in with SCU SSO
+            {redirecting
+              ? "Opening SCU sign-in…"
+              : loading
+                ? "Checking your session…"
+                : "Sign in with SCU SSO"}
           </button>
           <hr className="divider" />
           <p className="login-card-note">
             Students and Cellar staff use the same login. Your name and dining
-            points come from your SCU account.
+            points come from your SCU account. Only @scu.edu accounts can sign in.
           </p>
         </div>
       </section>

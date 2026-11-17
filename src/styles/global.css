@@ -240,6 +240,18 @@ p {
   background: var(--ink);
 }
 
+.icon-button--avatar {
+  padding: 0;
+  overflow: hidden;
+}
+
+.header-avatar {
+  display: block;
+  width: 42px;
+  height: 42px;
+  object-fit: cover;
+}
+
 .cart-badge {
   position: absolute;
   top: -7px;
@@ -719,4 +731,10 @@ p {
   .status-line {
     width: 20px;
   }
+}
+
+.page-status {
+  padding: 80px 24px;
+  color: var(--muted);
+  text-align: center;
 }

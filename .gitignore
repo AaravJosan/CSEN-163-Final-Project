@@ -1,2 +1,23 @@
+# Dependencies and build output
 node_modules/
 dist/
+.vite/
+
+# Environment files (Supabase URL/keys); .env.example is the shared template
+.env
+.env.*
+!.env.example
+
+# Supabase CLI local state
+supabase/.temp/
+supabase/.branches/
+
+# Local editor and tool settings
+.claude/
+.vscode/
+.idea/
+
+# Logs and OS files
+*.log
+npm-debug.log*
+.DS_Store
