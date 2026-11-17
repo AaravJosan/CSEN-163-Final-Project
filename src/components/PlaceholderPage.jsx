@@ -1,6 +1,6 @@
 export default function PlaceholderPage({ title, description }) {
   return (
-    <section className="placeholder-page">
+    <section className="panel placeholder-page">
       <p className="eyebrow">Cellar Deals</p>
       <h1>{title}</h1>
       <p>{description}</p>

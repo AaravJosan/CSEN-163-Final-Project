@@ -1,19 +1,27 @@
 import { createContext, useContext, useState } from "react";
 import products from "../data/products.js";
+import { formatPrice, isExpired } from "../utils/format.js";
 
-const STORAGE_KEY = "cellar-deals-state";
+const STORAGE_KEY = "cellar-deals-state-v2";
+const STARTING_BALANCE = 42.5;
 const CartContext = createContext(null);
+
+export const ACTIVE_STATUSES = ["preparing", "ready"];
+
+function roundMoney(value) {
+  return Math.round(value * 100) / 100;
+}
 
 function createInitialState() {
   return {
     inventory: products,
     cart: [],
-    balance: 2000,
+    balance: STARTING_BALANCE,
     orders: [],
   };
 }
 
-function readState() {
+function loadSavedState() {
   try {
     const savedState = localStorage.getItem(STORAGE_KEY);
     if (!savedState) return createInitialState();
@@ -24,7 +32,9 @@ function readState() {
       : [];
     const inventory = products.map((product) => {
       const savedProduct = savedInventory.find((item) => item.id === product.id);
-      return savedProduct && Number.isInteger(savedProduct.stock) && savedProduct.stock >= 0
+      return savedProduct &&
+        Number.isInteger(savedProduct.stock) &&
+        savedProduct.stock >= 0
         ? { ...product, stock: savedProduct.stock }
         : product;
     });
@@ -44,7 +54,7 @@ function readState() {
       balance:
         Number.isFinite(parsedState.balance) && parsedState.balance >= 0
           ? parsedState.balance
-          : 2000,
+          : STARTING_BALANCE,
       orders: Array.isArray(parsedState.orders) ? parsedState.orders : [],
     };
   } catch (error) {
@@ -53,45 +63,52 @@ function readState() {
   }
 }
 
-function formatPrice(price) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(price);
+function restock(inventory, items) {
+  const quantities = new Map(items.map((item) => [item.id, item.quantity]));
+  return inventory.map((product) => ({
+    ...product,
+    stock: product.stock + (quantities.get(product.id) ?? 0),
+  }));
 }
 
-function isPastBestBy(bestBy) {
-  const dateParts = /^([A-Za-z]{3}) (\d{1,2}), (\d{4})$/.exec(bestBy);
-  if (!dateParts) return true;
-  const month = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ].indexOf(dateParts[1]);
-  if (month < 0) return true;
+// Applies the order rules that depend on time passing:
+// - expired items are removed from the cart
+// - orders not picked up by the end of their window go back on sale and are refunded
+function applyTimeRules(state) {
+  const removedNames = [];
+  const cart = state.cart.filter((cartItem) => {
+    const product = state.inventory.find((item) => item.id === cartItem.productId);
+    if (product && isExpired(product.bestBy)) {
+      removedNames.push(product.name);
+      return false;
+    }
+    return true;
+  });
 
-  const day = Number(dateParts[2]);
-  const year = Number(dateParts[3]);
-  const date = new Date(year, month, day, 23, 59, 59, 999);
-  if (date.getMonth() !== month || date.getDate() !== day) return true;
-  return Date.now() > date.getTime();
+  let { inventory, balance } = state;
+  const orders = state.orders.map((order) => {
+    if (!ACTIVE_STATUSES.includes(order.status)) return order;
+    if (Date.now() <= new Date(order.pickupEnd).getTime()) return order;
+    inventory = restock(inventory, order.items);
+    balance = roundMoney(balance + order.total);
+    return { ...order, status: "unclaimed" };
+  });
+
+  return { state: { ...state, cart, inventory, balance, orders }, removedNames };
+}
+
+function readInitialState() {
+  return applyTimeRules(loadSavedState());
 }
 
 function createOrderCode() {
-  return `CD-${crypto.randomUUID().toUpperCase()}`;
+  return `CD-${Math.floor(1000 + Math.random() * 9000)}`;
 }
 
 export function CartProvider({ children }) {
-  const [state, setState] = useState(readState);
+  const [initial] = useState(readInitialState);
+  const [state, setState] = useState(initial.state);
+  const [expiredNotice, setExpiredNotice] = useState(initial.removedNames);
   const [storageError, setStorageError] = useState("");
 
   function saveState(nextState) {
@@ -102,77 +119,85 @@ export function CartProvider({ children }) {
       return true;
     } catch (error) {
       console.error("Could not save Cellar Deals data:", error);
-      setStorageError("Your changes could not be saved. Check your browser storage and try again.");
+      setStorageError(
+        "Your changes could not be saved. Check your browser storage and try again.",
+      );
       return false;
     }
   }
 
-  function addToCart(productId) {
+  function saveResult(nextState, failureMessage) {
+    return saveState(nextState)
+      ? { success: true }
+      : { success: false, error: failureMessage };
+  }
+
+  function addToCart(productId, amount = 1) {
     const product = state.inventory.find((item) => item.id === productId);
-    if (!product) return { success: false, error: "This product is no longer available." };
+    if (!product) return { success: false, error: "This item is no longer available." };
+    if (isExpired(product.bestBy)) {
+      return { success: false, error: `${product.name} has expired.` };
+    }
 
     const cartItem = state.cart.find((item) => item.productId === productId);
-    const quantity = cartItem?.quantity ?? 0;
-    if (quantity >= product.stock) {
+    const quantity = (cartItem?.quantity ?? 0) + amount;
+    if (quantity > product.stock) {
       return {
         success: false,
-        error: `Only ${product.stock} ${product.name} available.`,
+        error:
+          product.stock === 0
+            ? `${product.name} is sold out.`
+            : `Only ${product.stock} ${product.name} left.`,
       };
     }
 
     const cart = cartItem
       ? state.cart.map((item) =>
-          item.productId === productId
-            ? { ...item, quantity: item.quantity + 1 }
-            : item,
+          item.productId === productId ? { ...item, quantity } : item,
         )
-      : [...state.cart, { productId, quantity: 1 }];
+      : [...state.cart, { productId, quantity }];
 
-    return saveState({ ...state, cart })
-      ? { success: true }
-      : { success: false, error: "Could not save your cart. Please try again." };
+    return saveResult({ ...state, cart }, "Could not save your cart. Please try again.");
   }
 
   function setCartQuantity(productId, quantity) {
-    if (quantity <= 0) {
-      return removeFromCart(productId);
-    }
+    if (quantity <= 0) return removeFromCart(productId);
 
     const product = state.inventory.find((item) => item.id === productId);
     if (!product || !Number.isInteger(quantity) || quantity > product.stock) {
       return {
         success: false,
-        error: `Only ${product?.stock ?? 0} ${product?.name ?? "items"} available.`,
+        error: `Only ${product?.stock ?? 0} ${product?.name ?? "items"} left.`,
       };
     }
 
     const cart = state.cart.map((item) =>
       item.productId === productId ? { ...item, quantity } : item,
     );
-    return saveState({ ...state, cart })
-      ? { success: true }
-      : { success: false, error: "Could not save your cart. Please try again." };
+    return saveResult({ ...state, cart }, "Could not save your cart. Please try again.");
   }
 
   function removeFromCart(productId) {
     const cart = state.cart.filter((item) => item.productId !== productId);
-    return saveState({ ...state, cart })
-      ? { success: true }
-      : { success: false, error: "Could not save your cart. Please try again." };
+    return saveResult({ ...state, cart }, "Could not save your cart. Please try again.");
   }
 
-  function addFunds(amount = 500) {
+  function addFunds(amount) {
     if (!Number.isFinite(amount) || amount <= 0) {
-      return { success: false, error: "Enter a valid amount to add." };
+      return { success: false, error: "Choose an amount to add." };
     }
-    return saveState({ ...state, balance: state.balance + amount })
-      ? { success: true }
-      : { success: false, error: "Could not update your balance. Please try again." };
+    return saveResult(
+      { ...state, balance: roundMoney(state.balance + amount) },
+      "Could not update your balance. Please try again.",
+    );
   }
 
-  function checkout() {
+  function checkout(pickupWindow) {
     if (state.cart.length === 0) {
       return { success: false, error: "Your cart is empty." };
+    }
+    if (!pickupWindow) {
+      return { success: false, error: "Choose a pickup window." };
     }
 
     const items = state.cart.map((cartItem) => {
@@ -181,87 +206,152 @@ export function CartProvider({ children }) {
     });
 
     if (items.some((item) => !item)) {
-      return { success: false, error: "A cart item is no longer available. Remove it and try again." };
+      return {
+        success: false,
+        error: "A cart item is no longer available. Remove it and try again.",
+      };
     }
 
     const unavailableItem = items.find((item) => item.quantity > item.stock);
     if (unavailableItem) {
       return {
         success: false,
-        error: `Only ${unavailableItem.stock} ${unavailableItem.name} available. Update your cart to continue.`,
+        error:
+          unavailableItem.stock === 0
+            ? `${unavailableItem.name} sold out. Remove it to continue.`
+            : `Only ${unavailableItem.stock} ${unavailableItem.name} left. Update your cart to continue.`,
       };
     }
 
-    const expiredItem = items.find((item) => isPastBestBy(item.bestBy));
+    const expiredItem = items.find((item) => isExpired(item.bestBy));
     if (expiredItem) {
       return {
         success: false,
-        error: `${expiredItem.name} passed its best-by date and cannot be purchased.`,
+        error: `${expiredItem.name} passed its best-by time. Remove it to continue.`,
       };
     }
 
-    const total = Math.round(
-      items.reduce(
-        (sum, item) => sum + item.discountedPrice * item.quantity,
-        0,
-      ) * 100,
-    ) / 100;
+    const total = roundMoney(
+      items.reduce((sum, item) => sum + item.discountedPrice * item.quantity, 0),
+    );
     if (total > state.balance) {
       return {
         success: false,
         insufficientFunds: true,
-        error: `You need ${formatPrice(total - state.balance)} more dining points to complete this order.`,
+        error: `You need ${formatPrice(total - state.balance)} more in dining points.`,
       };
     }
 
-    const createdAt = new Date();
     const order = {
       id: crypto.randomUUID(),
       code: createOrderCode(),
+      status: "preparing",
       items: items.map((item) => ({
         id: item.id,
         name: item.name,
-        image: item.image,
+        kind: item.kind,
         quantity: item.quantity,
         unitPrice: item.discountedPrice,
       })),
       total,
-      pickupLocation: "The Cellar",
-      pickupStart: new Date(createdAt.getTime() + 15 * 60 * 1000).toISOString(),
-      pickupEnd: new Date(createdAt.getTime() + 60 * 60 * 1000).toISOString(),
-      createdAt: createdAt.toISOString(),
+      pickupLocation: "the Cellar counter",
+      pickupStart: pickupWindow.start,
+      pickupEnd: pickupWindow.end,
+      createdAt: new Date().toISOString(),
     };
-    const purchasedQuantities = new Map(
-      items.map((item) => [item.id, item.quantity]),
-    );
+    const purchased = new Map(items.map((item) => [item.id, item.quantity]));
     const inventory = state.inventory.map((product) => ({
       ...product,
-      stock: product.stock - (purchasedQuantities.get(product.id) ?? 0),
+      stock: product.stock - (purchased.get(product.id) ?? 0),
     }));
-    const nextState = {
+
+    return saveState({
       ...state,
       inventory,
       cart: [],
-      balance: Math.round((state.balance - total) * 100) / 100,
+      balance: roundMoney(state.balance - total),
       orders: [order, ...state.orders],
-    };
-
-    return saveState(nextState)
+    })
       ? { success: true, order }
       : { success: false, error: "Could not save your order. Please try again." };
   }
 
-  const cartItems = state.cart.map((cartItem) => ({
-    ...cartItem,
-    product: state.inventory.find((product) => product.id === cartItem.productId),
-  }));
-  const cartCount = state.cart.reduce((count, item) => count + item.quantity, 0);
-  const cartTotal = cartItems.reduce(
-    (total, item) =>
-      total + (item.product?.discountedPrice ?? 0) * item.quantity,
-    0,
+  function cancelOrder(orderId) {
+    const order = state.orders.find((item) => item.id === orderId);
+    if (!order || order.status !== "preparing") {
+      return { success: false, error: "Only orders that are still being prepared can be cancelled." };
+    }
+    return saveResult(
+      {
+        ...state,
+        inventory: restock(state.inventory, order.items),
+        balance: roundMoney(state.balance + order.total),
+        orders: state.orders.map((item) =>
+          item.id === orderId ? { ...item, status: "cancelled" } : item,
+        ),
+      },
+      "Could not cancel your order. Please try again.",
+    );
+  }
+
+  // Staff moves an order from preparing → ready → picked up.
+  function advanceOrderStatus(orderId) {
+    const nextStatus = { preparing: "ready", ready: "picked-up" };
+    const order = state.orders.find((item) => item.id === orderId);
+    if (!order || !nextStatus[order.status]) {
+      return { success: false, error: "This order can't be updated." };
+    }
+    return saveResult(
+      {
+        ...state,
+        orders: state.orders.map((item) =>
+          item.id === orderId ? { ...item, status: nextStatus[item.status] } : item,
+        ),
+      },
+      "Could not update the order. Please try again.",
+    );
+  }
+
+  // Adds an earlier order's items back to the cart, as many as are still in stock.
+  function buyAgain(order) {
+    let cart = [...state.cart];
+    let added = 0;
+    order.items.forEach((orderItem) => {
+      const product = state.inventory.find((item) => item.id === orderItem.id);
+      if (!product || isExpired(product.bestBy)) return;
+      const existing = cart.find((item) => item.productId === orderItem.id);
+      const inCart = existing?.quantity ?? 0;
+      const quantity = Math.min(product.stock, inCart + orderItem.quantity);
+      if (quantity <= inCart) return;
+      added += quantity - inCart;
+      cart = existing
+        ? cart.map((item) => (item.productId === orderItem.id ? { ...item, quantity } : item))
+        : [...cart, { productId: orderItem.id, quantity }];
+    });
+
+    if (added === 0) {
+      return { success: false, error: "These items aren’t available right now." };
+    }
+    return saveResult({ ...state, cart }, "Could not save your cart. Please try again.");
+  }
+
+  const cartItems = state.cart
+    .map((cartItem) => ({
+      ...cartItem,
+      product: state.inventory.find((product) => product.id === cartItem.productId),
+    }))
+    .filter((item) => item.product);
+  const cartCount = cartItems.reduce((count, item) => count + item.quantity, 0);
+  const cartTotal = roundMoney(
+    cartItems.reduce((total, item) => total + item.product.discountedPrice * item.quantity, 0),
   );
-  const roundedCartTotal = Math.round(cartTotal * 100) / 100;
+  const cartSubtotal = roundMoney(
+    cartItems.reduce(
+      (total, item) =>
+        total + (item.product.originalPrice ?? item.product.discountedPrice) * item.quantity,
+      0,
+    ),
+  );
 
   return (
     <CartContext.Provider
@@ -269,15 +359,21 @@ export function CartProvider({ children }) {
         inventory: state.inventory,
         cartItems,
         cartCount,
-        cartTotal: roundedCartTotal,
+        cartTotal,
+        cartSubtotal,
         balance: state.balance,
         orders: state.orders,
         storageError,
+        expiredNotice,
+        dismissExpiredNotice: () => setExpiredNotice([]),
         addToCart,
         setCartQuantity,
         removeFromCart,
         addFunds,
         checkout,
+        cancelOrder,
+        advanceOrderStatus,
+        buyAgain,
       }}
     >
       {children}

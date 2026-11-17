@@ -1,208 +1,65 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { formatPrice, useCart } from "../context/CartContext.jsx";
-import { supabase } from "../services/supabaseClient.js";
+import userIcon from "../assets/icons/user.svg";
+import AddFundsModal from "../components/AddFundsModal.jsx";
+import { ACTIVE_STATUSES, formatPrice, useCart } from "../context/CartContext.jsx";
+import "./Profile.css";
 
+// Not in the Figma file: built from the same tokens and components.
 export default function Profile() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const { diningPoints, addFunds } = useCart();
-
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user: currentUser } }) => {
-      setUser(currentUser);
-      setLoading(false);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => {
-      subscription?.unsubscribe();
-    };
-  }, []);
-
-  if (loading) {
-    return (
-      <div style={{ maxWidth: 600, margin: "60px auto", textAlign: "center" }}>
-        <p>Loading profile...</p>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div
-        style={{
-          maxWidth: 520,
-          margin: "60px auto",
-          padding: "32px",
-          textAlign: "center",
-          background: "var(--color-surface, #fff)",
-          border: "1px solid var(--color-border, #e5e7eb)",
-          borderRadius: "var(--radius-lg, 12px)",
-        }}
-      >
-        <h2>Not Signed In</h2>
-        <p style={{ color: "var(--color-text-muted, #666)", marginBottom: "20px" }}>
-          Sign in with your SCU school account to view your profile and dining
-          points.
-        </p>
-        <Link
-          to="/login"
-          style={{
-            display: "inline-block",
-            padding: "10px 20px",
-            background: "#861f41",
-            color: "white",
-            textDecoration: "none",
-            borderRadius: "6px",
-            fontWeight: 600,
-          }}
-        >
-          Go to Login
-        </Link>
-      </div>
-    );
-  }
-
-  const fullName =
-    user.user_metadata?.full_name ||
-    user.user_metadata?.name ||
-    "Santa Clara Student";
-  const avatarUrl =
-    user.user_metadata?.avatar_url ||
-    user.user_metadata?.picture ||
-    user.identities?.[0]?.identity_data?.avatar_url ||
-    user.identities?.[0]?.identity_data?.picture;
+  const { balance, orders } = useCart();
+  const [showFunds, setShowFunds] = useState(false);
+  const activeOrders = orders.filter((order) => ACTIVE_STATUSES.includes(order.status)).length;
 
   return (
-    <div
-      style={{
-        maxWidth: 600,
-        margin: "40px auto",
-        padding: "32px",
-        background: "var(--color-surface, #fff)",
-        border: "1px solid var(--color-border, #e5e7eb)",
-        borderRadius: "var(--radius-lg, 12px)",
-        boxShadow: "var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.05))",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "20px",
-          paddingBottom: "24px",
-          borderBottom: "1px solid var(--color-border, #e5e7eb)",
-        }}
-      >
-        {avatarUrl ? (
-          <img
-            src={avatarUrl}
-            alt="Profile avatar"
-            referrerPolicy="no-referrer"
-            onError={(e) => {
-              e.currentTarget.style.display = "none";
-            }}
-            style={{
-              width: "72px",
-              height: "72px",
-              borderRadius: "50%",
-              objectFit: "cover",
-              border: "2px solid #861f41",
-            }}
-          />
-        ) : (
-          <div
-            style={{
-              width: "72px",
-              height: "72px",
-              borderRadius: "50%",
-              background: "#861f41",
-              color: "white",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "1.8rem",
-              fontWeight: 700,
-            }}
-          >
-            {fullName.charAt(0).toUpperCase()}
-          </div>
-        )}
-        <div>
-          <h1 style={{ margin: "0 0 4px", fontSize: "1.5rem" }}>{fullName}</h1>
-          <p style={{ margin: "0 0 6px", color: "var(--color-text-muted, #666)" }}>
-            {user.email}
-          </p>
-          <span
-            style={{
-              display: "inline-block",
-              fontSize: "0.75rem",
-              fontWeight: 700,
-              textTransform: "uppercase",
-              padding: "2px 8px",
-              borderRadius: "12px",
-              background: "#ecfdf5",
-              color: "#065f46",
-              border: "1px solid #a7f3d0",
-            }}
-          >
-            Verified SCU Student
-          </span>
-        </div>
-      </div>
+    <div className="profile-page">
+      <h1 className="page-title">Profile</h1>
 
-      <div style={{ marginTop: "24px" }}>
-        <h2 style={{ fontSize: "1.1rem", marginBottom: "12px" }}>
-          Dining Account
-        </h2>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            padding: "16px",
-            background: "#f9fafb",
-            borderRadius: "8px",
-            border: "1px solid #e5e7eb",
-          }}
-        >
-          <div>
-            <div style={{ fontSize: "0.85rem", color: "#6b7280" }}>
-              Available Dining Points
-            </div>
-            <div
-              style={{
-                fontSize: "1.6rem",
-                fontWeight: 700,
-                color: "#111827",
-                marginTop: "2px",
-              }}
-            >
-              {formatPrice(diningPoints)}
-            </div>
-          </div>
-          <button
-            onClick={() => addFunds(15)}
-            style={{
-              padding: "8px 16px",
-              background: "#861f41",
-              color: "white",
-              border: "none",
-              borderRadius: "6px",
-              fontWeight: 600,
-              cursor: "pointer",
-            }}
-          >
-            + Add $15.00
-          </button>
+      <section className="panel profile-card">
+        <span className="profile-avatar">
+          <img src={userIcon} alt="" width="22" height="22" />
+        </span>
+        <div>
+          <h2>SCU Student</h2>
+          <p>Signed in with SCU SSO</p>
         </div>
-      </div>
+        <Link className="button button--secondary profile-signout" to="/login">
+          Sign out
+        </Link>
+      </section>
+
+      <section className="panel profile-points">
+        <div>
+          <p className="profile-label">Dining points</p>
+          <p className="profile-balance">{formatPrice(balance)}</p>
+        </div>
+        <button type="button" className="button button--primary" onClick={() => setShowFunds(true)}>
+          Add funds
+        </button>
+      </section>
+
+      <section className="profile-links" aria-label="Shortcuts">
+        <Link className="panel profile-link" to="/orders">
+          <span>My orders</span>
+          <span className="profile-link-meta">
+            {activeOrders > 0 ? `${activeOrders} waiting for pickup` : "View history"} →
+          </span>
+        </Link>
+        <Link className="panel profile-link" to="/staff/inventory">
+          <span>Staff: Inventory</span>
+          <span className="profile-link-meta">Stock and expiry →</span>
+        </Link>
+        <Link className="panel profile-link" to="/staff/orders">
+          <span>Staff: Incoming orders</span>
+          <span className="profile-link-meta">Update order status →</span>
+        </Link>
+        <Link className="panel profile-link" to="/staff/items/new">
+          <span>Staff: Item editor</span>
+          <span className="profile-link-meta">Add an item →</span>
+        </Link>
+      </section>
+
+      {showFunds && <AddFundsModal onClose={() => setShowFunds(false)} />}
     </div>
   );
 }

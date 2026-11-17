@@ -1,168 +1,158 @@
-.page-content:has(.staff-inventory-page),
-.page-content:has(.staff-orders-page) {
-  width: min(100% - 2rem, 960px);
-  margin: 2rem auto 4rem;
+/* Shared by the staff Inventory and Incoming orders pages. */
+.staff-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
-.staff-inventory-page,
-.staff-orders-page {
-  color: #425766;
+.staff-intro {
+  margin-top: 8px;
+  color: var(--muted);
 }
 
-.staff-inventory-page h1,
-.staff-orders-page h1 {
-  margin: 0 0 0.6rem;
-  color: #a32035;
-  font-size: clamp(2rem, 4vw, 2.6rem);
+.staff-list {
+  padding: 4px 24px;
 }
 
-.staff-page-intro {
-  margin: 0 0 1.25rem;
-  color: #758592;
-  line-height: 1.55;
-}
-
-.staff-inventory-list,
-.staff-order-list {
-  display: grid;
-  gap: 0.7rem;
-}
-
-.staff-inventory-item {
-  display: grid;
-  grid-template-columns: 72px minmax(0, 1fr) 90px 90px;
+.staff-row {
+  display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 0.8rem;
-  border: 1px solid #d0d5d9;
-  border-radius: 0.65rem;
-  background: #fff;
+  gap: 16px;
+  padding: 14px 0;
 }
 
-.staff-inventory-item > img {
-  width: 72px;
-  height: 62px;
-  border-radius: 0.4rem;
-  background: #efeeec;
-  object-fit: cover;
+.staff-row + .staff-row {
+  border-top: 1px solid var(--line);
 }
 
-.staff-inventory-item h2 {
-  margin: 0;
-  color: #425766;
-  font-size: 0.95rem;
+.staff-tile {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
 }
 
-.staff-inventory-item p {
-  margin: 0.4rem 0 0;
-  color: #758592;
-  font-size: 0.8rem;
+.staff-tile img {
+  width: 28px;
+  height: 28px;
 }
 
-.staff-inventory-stock {
-  display: grid;
-  gap: 0.2rem;
-  color: #a32035;
-  text-align: center;
+.staff-row-main {
+  flex: 1;
+  min-width: 0;
 }
 
-.staff-inventory-stock strong {
-  font-size: 1.25rem;
+.staff-row-main h2 {
+  font-size: 16px;
+  font-weight: 600;
 }
 
-.staff-inventory-stock span,
-.staff-inventory-price {
-  color: #425766;
-  font-size: 0.8rem;
+.staff-row-main p {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 14px;
 }
 
-.staff-inventory-price {
-  color: #a32035;
+.staff-stock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 64px;
+}
+
+.staff-stock strong {
+  font-size: 20px;
+}
+
+.staff-stock span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.staff-price {
+  min-width: 64px;
   text-align: right;
 }
 
-.staff-orders-empty {
-  padding: 2rem;
-  border: 1px dashed #b5b1ac;
-  border-radius: 0.75rem;
-  background: #fff;
-  color: #758592;
-  text-align: center;
+.staff-orders-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
 }
 
-.staff-orders-empty h2 {
-  margin: 0 0 0.5rem;
-  color: #425766;
+.staff-lookup input {
+  width: 280px;
+  max-width: 100%;
+  height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  font-size: 15px;
 }
 
-.staff-orders-empty p {
+.staff-order-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.staff-order {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 24px;
+}
+
+.staff-order-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.staff-order-head h2 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.staff-order-when {
+  flex-basis: 100%;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.staff-order ul {
   margin: 0;
+  padding-left: 18px;
+  line-height: 1.6;
 }
 
-.staff-order-card {
-  padding: 1rem 1.2rem;
-  border: 1px solid #d0d5d9;
-  border-radius: 0.7rem;
-  background: #fff;
-}
-
-.staff-order-heading {
+.staff-order-foot {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-}
-
-.staff-order-heading h2 {
-  margin: 0.2rem 0 0;
-  overflow-wrap: anywhere;
-  color: #a32035;
-  font-size: clamp(0.9rem, 3vw, 1.15rem);
-  letter-spacing: 0.03em;
-}
-
-.staff-order-heading > strong {
-  color: #425766;
-}
-
-.staff-order-label {
-  color: #758592;
-  font-size: 0.75rem;
-}
-
-.staff-order-card ul {
-  display: grid;
-  gap: 0.4rem;
-  margin: 1rem 0;
-  padding-left: 1.2rem;
-  color: #425766;
-  font-size: 0.9rem;
-}
-
-.staff-order-card > p {
-  margin: 0;
-  color: #758592;
-  font-size: 0.85rem;
+  gap: 12px;
+  margin-top: auto;
 }
 
 @media (max-width: 600px) {
-  .page-content:has(.staff-inventory-page),
-  .page-content:has(.staff-orders-page) {
-    margin: 1.5rem auto 3rem;
+  .staff-list {
+    padding: 4px 16px;
   }
 
-  .staff-inventory-item {
-    grid-template-columns: 56px minmax(0, 1fr) auto;
-    gap: 0.65rem;
+  .staff-row {
+    flex-wrap: wrap;
   }
 
-  .staff-inventory-item > img {
-    width: 56px;
-    height: 56px;
+  .staff-row-main {
+    flex-basis: calc(100% - 72px);
   }
 
-  .staff-inventory-price {
-    grid-column: 2;
-    text-align: left;
+  .staff-order-list {
+    grid-template-columns: 1fr;
   }
 }

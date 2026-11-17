@@ -1,0 +1,113 @@
+.item-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.item-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(26, 20, 13, 0.12);
+}
+
+.item-card-link {
+  display: block;
+}
+
+.item-card-tile {
+  height: 180px;
+}
+
+.item-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px 16px;
+}
+
+.item-card-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.item-card-stock {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.item-card-name {
+  margin: 0;
+  overflow: hidden;
+  font-size: 16px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-card-name a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.item-card-name a::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+}
+
+.item-card-price-row .price {
+  font-size: 18px;
+}
+
+.add-button {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  margin-left: auto;
+  padding: 8px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--green);
+  cursor: pointer;
+}
+
+.add-button:hover:not(:disabled) {
+  background: var(--green-dark);
+}
+
+.add-button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.item-card-feedback {
+  position: absolute;
+  right: 16px;
+  bottom: 52px;
+  margin: 0;
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.item-card-feedback:empty {
+  display: none;
+}
+
+.item-card-feedback {
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
