@@ -1,6 +1,8 @@
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import DataGate from "./components/DataGate.jsx";
 import Header from "./components/Header.jsx";
 import RequireAuth from "./components/RequireAuth.jsx";
+import RequireStaff from "./components/RequireStaff.jsx";
 import BrowseDeals from "./pages/BrowseDeals.jsx";
 import Cart from "./pages/Cart.jsx";
 import Login from "./pages/Login.jsx";
@@ -23,23 +25,53 @@ export default function App() {
     <RequireAuth>
       <Header />
       <main className="page-content">
-        <Routes>
-          <Route path="/" element={<Navigate to="/deals" replace />} />
-          <Route path="/deals" element={<BrowseDeals />} />
-          <Route path="/products/:id" element={<ProductDetails />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route
-            path="/order-confirmation/:orderId?"
-            element={<OrderConfirmation />}
-          />
-          <Route path="/orders" element={<MyOrders />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/staff/inventory" element={<StaffInventory />} />
-          <Route path="/staff/items/new" element={<StaffItemEditor />} />
-          <Route path="/staff/items/:itemId/edit" element={<StaffItemEditor />} />
-          <Route path="/staff/orders" element={<StaffIncomingOrders />} />
-          <Route path="*" element={<Navigate to="/deals" replace />} />
-        </Routes>
+        <DataGate>
+          <Routes>
+            <Route path="/" element={<Navigate to="/deals" replace />} />
+            <Route path="/deals" element={<BrowseDeals />} />
+            <Route path="/products/:id" element={<ProductDetails />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route
+              path="/order-confirmation/:orderId?"
+              element={<OrderConfirmation />}
+            />
+            <Route path="/orders" element={<MyOrders />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route
+              path="/staff/inventory"
+              element={
+                <RequireStaff>
+                  <StaffInventory />
+                </RequireStaff>
+              }
+            />
+            <Route
+              path="/staff/items/new"
+              element={
+                <RequireStaff>
+                  <StaffItemEditor />
+                </RequireStaff>
+              }
+            />
+            <Route
+              path="/staff/items/:itemId/edit"
+              element={
+                <RequireStaff>
+                  <StaffItemEditor />
+                </RequireStaff>
+              }
+            />
+            <Route
+              path="/staff/orders"
+              element={
+                <RequireStaff>
+                  <StaffIncomingOrders />
+                </RequireStaff>
+              }
+            />
+            <Route path="*" element={<Navigate to="/deals" replace />} />
+          </Routes>
+        </DataGate>
       </main>
     </RequireAuth>
   );
