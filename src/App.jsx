@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Header from "./components/Header.jsx";
+import RequireAuth from "./components/RequireAuth.jsx";
 import BrowseDeals from "./pages/BrowseDeals.jsx";
 import Cart from "./pages/Cart.jsx";
 import Login from "./pages/Login.jsx";
@@ -19,11 +20,11 @@ export default function App() {
   }
 
   return (
-    <>
+    <RequireAuth>
       <Header />
       <main className="page-content">
         <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={<Navigate to="/deals" replace />} />
           <Route path="/deals" element={<BrowseDeals />} />
           <Route path="/products/:id" element={<ProductDetails />} />
           <Route path="/cart" element={<Cart />} />
@@ -40,6 +41,6 @@ export default function App() {
           <Route path="*" element={<Navigate to="/deals" replace />} />
         </Routes>
       </main>
-    </>
+    </RequireAuth>
   );
 }
