@@ -1,154 +1,203 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import warningIcon from "../assets/icons/warning.svg";
+import AddFundsModal from "../components/AddFundsModal.jsx";
+import FoodTile from "../components/FoodTile.jsx";
+import Stepper from "../components/Stepper.jsx";
+import Tag from "../components/Tag.jsx";
 import { formatPrice, useCart } from "../context/CartContext.jsx";
+import { formatTime } from "../utils/format.js";
+import { getPickupWindows } from "../utils/pickup.js";
 import "./Cart.css";
+
+function formatExpiredNotice(names) {
+  if (names.length === 1) return `${names[0]} expired and was removed from your cart.`;
+  return `${names.slice(0, -1).join(", ")} and ${names.at(-1)} expired and were removed from your cart.`;
+}
 
 export default function Cart() {
   const navigate = useNavigate();
   const {
     cartItems,
+    cartCount,
     cartTotal,
+    cartSubtotal,
     balance,
     storageError,
+    expiredNotice,
+    dismissExpiredNotice,
     setCartQuantity,
     removeFromCart,
-    addFunds,
     checkout,
   } = useCart();
-  const [checkoutError, setCheckoutError] = useState("");
-  const [needsFunds, setNeedsFunds] = useState(false);
+  const [pickupWindows] = useState(getPickupWindows);
+  const [pickupId, setPickupId] = useState(
+    () => (pickupWindows.find((window) => window.id === "0-17") ?? pickupWindows[0])?.id,
+  );
+  const [error, setError] = useState("");
+  const [fundsModal, setFundsModal] = useState(null);
+
+  const savings = Math.round((cartSubtotal - cartTotal) * 100) / 100;
+  const balanceAfter = balance - cartTotal;
 
   function handleCheckout() {
-    const result = checkout();
+    const result = checkout(pickupWindows.find((window) => window.id === pickupId));
     if (result.success) {
       navigate(`/order-confirmation/${result.order.id}`);
       return;
     }
-
-    setCheckoutError(result.error);
-    setNeedsFunds(Boolean(result.insufficientFunds));
-  }
-
-  function handleAddFunds() {
-    const result = addFunds();
-    if (result.success) {
-      setCheckoutError("");
-      setNeedsFunds(false);
-    } else {
-      setCheckoutError(result.error);
+    if (result.insufficientFunds) {
+      setError("");
+      setFundsModal({ message: result.error });
+      return;
     }
+    setError(result.error);
   }
 
-  function handleQuantityChange(productId, quantity) {
-    const result = setCartQuantity(productId, quantity);
-    if (!result.success) setCheckoutError(result.error);
-    else setCheckoutError("");
-    setNeedsFunds(false);
-  }
-
-  function handleRemoveFromCart(productId) {
-    const result = removeFromCart(productId);
-    if (!result.success) setCheckoutError(result.error);
-    else setCheckoutError("");
-    setNeedsFunds(false);
+  function handleResult(result) {
+    setError(result.success ? "" : result.error);
   }
 
   return (
-    <section className="cart-page">
-      <p className="eyebrow">Your Cellar Deals</p>
-      <h1>Your Cart</h1>
-
-      <div className="cart-balance">
-        <span>Dining points balance</span>
-        <strong>{formatPrice(balance)}</strong>
+    <div className="cart-page">
+      <div className="cart-heading">
+        <h1 className="page-title">Your cart</h1>
+        <span>
+          {cartCount} {cartCount === 1 ? "item" : "items"}
+        </span>
       </div>
 
-      {storageError && <p className="cart-error" role="alert">{storageError}</p>}
-      {checkoutError && <p className="cart-error" role="alert">{checkoutError}</p>}
+      {expiredNotice.length > 0 && (
+        <div className="alert" role="status">
+          <img src={warningIcon} alt="" width="20" height="20" />
+          <p>{formatExpiredNotice(expiredNotice)}</p>
+          <button type="button" onClick={dismissExpiredNotice}>
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {storageError && <p className="form-error" role="alert">{storageError}</p>}
+      {error && <p className="form-error" role="alert">{error}</p>}
 
       {cartItems.length === 0 ? (
-        <div className="cart-empty">
+        <div className="empty-state panel">
           <h2>Your cart is empty</h2>
-          <p>Browse today’s deals and find something delicious.</p>
-          <Link className="cart-primary-link" to="/deals">
-            Browse Deals
+          <p>Browse today’s deals and grab something before it’s gone.</p>
+          <Link className="button button--primary" to="/deals">
+            Browse deals
           </Link>
         </div>
       ) : (
         <div className="cart-layout">
-          <div className="cart-items" aria-label="Cart items">
+          <section className="panel cart-items" aria-label="Cart items">
             {cartItems.map(({ product, productId, quantity }) => (
-              <article className="cart-item" key={productId}>
-                <img src={product.image} alt={product.name} />
-                <div className="cart-item-details">
-                  <h2>{product.name}</h2>
-                  <p>{formatPrice(product.discountedPrice)} each</p>
-                  <p className="cart-item-stock">{product.stock} currently in stock</p>
-                </div>
-                <div className="cart-item-actions">
-                  <div className="quantity-control" aria-label={`Quantity for ${product.name}`}>
-                    <button
-                      type="button"
-                      aria-label={`Decrease ${product.name} quantity`}
-                      onClick={() => handleQuantityChange(productId, quantity - 1)}
-                    >
-                      −
-                    </button>
-                    <span>{quantity}</span>
-                    <button
-                      type="button"
-                      aria-label={`Increase ${product.name} quantity`}
-                      disabled={quantity >= product.stock}
-                      onClick={() => handleQuantityChange(productId, quantity + 1)}
-                    >
-                      +
-                    </button>
+              <article className="cart-row" key={productId}>
+                <Link to={`/products/${productId}`} className="cart-row-tile-link">
+                  <FoodTile kind={product.kind} className="cart-row-tile" />
+                  <span className="visually-hidden">{product.name}</span>
+                </Link>
+                <div className="cart-row-details">
+                  <h2>
+                    <Link to={`/products/${productId}`}>{product.name}</Link>
+                  </h2>
+                  <div className="cart-row-meta">
+                    <Tag tone={product.tag.tone}>{product.tag.label}</Tag>
+                    <span>Pick up by {formatTime(product.bestBy)}</span>
                   </div>
-                  <strong>{formatPrice(product.discountedPrice * quantity)}</strong>
                   <button
-                    className="remove-item-button"
                     type="button"
-                    onClick={() => handleRemoveFromCart(productId)}
+                    className="cart-remove"
+                    onClick={() => handleResult(removeFromCart(productId))}
                   >
                     Remove
                   </button>
                 </div>
+                <Stepper
+                  value={quantity}
+                  min={1}
+                  max={product.stock}
+                  onChange={(value) => handleResult(setCartQuantity(productId, value))}
+                  label={`Quantity of ${product.name}`}
+                />
+                <div className="cart-row-price">
+                  <span className="price">{formatPrice(product.discountedPrice * quantity)}</span>
+                  {product.originalPrice !== null && (
+                    <span className="price-was">
+                      {formatPrice(product.originalPrice * quantity)}
+                    </span>
+                  )}
+                </div>
               </article>
             ))}
-          </div>
+          </section>
 
-          <aside className="cart-summary">
-            <h2>Order Summary</h2>
-            <div className="cart-summary-row">
+          <aside className="panel order-summary" aria-labelledby="summary-title">
+            <h2 id="summary-title">Order summary</h2>
+            <div className="summary-row">
               <span>Subtotal</span>
+              <strong>{formatPrice(cartSubtotal)}</strong>
+            </div>
+            {savings > 0 && (
+              <div className="summary-row">
+                <span>Cellar Deals savings</span>
+                <strong className="summary-savings">−{formatPrice(savings)}</strong>
+              </div>
+            )}
+            <hr className="divider" />
+            <div className="summary-row summary-total">
+              <span>Total</span>
               <strong>{formatPrice(cartTotal)}</strong>
             </div>
-            <div className="cart-summary-row cart-summary-balance">
-              <span>Balance after purchase</span>
-              <strong>{formatPrice(balance - cartTotal)}</strong>
-            </div>
-            {needsFunds && (
-              <button
-                className="add-funds-button"
-                type="button"
-                onClick={handleAddFunds}
-              >
-                Add $500 Dining Points
-              </button>
-            )}
+
+            <label className="pickup-field">
+              <span>Pickup window</span>
+              <span className="pickup-select">
+                <select value={pickupId} onChange={(event) => setPickupId(event.target.value)}>
+                  {pickupWindows.map((window) => (
+                    <option key={window.id} value={window.id}>
+                      {window.label}
+                    </option>
+                  ))}
+                </select>
+                <span aria-hidden="true">▾</span>
+              </span>
+            </label>
+
             <button
-              className="cart-checkout-button"
               type="button"
+              className="button button--primary button--block"
               onClick={handleCheckout}
             >
-              Buy Now
+              Buy now · {formatPrice(cartTotal)}
             </button>
-            <p className="cart-prototype-note">
-              Prototype checkout uses simulated dining points.
-            </p>
+
+            <div className="summary-row summary-note">
+              <span>Paid with dining points</span>
+              <strong>
+                {balanceAfter >= 0
+                  ? `Balance after: ${formatPrice(balanceAfter)}`
+                  : `Short by ${formatPrice(-balanceAfter)}`}
+              </strong>
+            </div>
+
+            <div className="low-balance">
+              <p>Running low on points?</p>
+              <button
+                type="button"
+                className="button button--secondary button--block"
+                onClick={() => setFundsModal({})}
+              >
+                Add funds
+              </button>
+            </div>
           </aside>
         </div>
       )}
-    </section>
+
+      {fundsModal && (
+        <AddFundsModal message={fundsModal.message} onClose={() => setFundsModal(null)} />
+      )}
+    </div>
   );
 }
