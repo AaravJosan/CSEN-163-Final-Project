@@ -1,18 +1,11 @@
 import { Link, useParams } from "react-router-dom";
+import checkIcon from "../assets/icons/check-large.svg";
+import clockIcon from "../assets/icons/clock.svg";
+import StatusTracker from "../components/StatusTracker.jsx";
 import { formatPrice, useCart } from "../context/CartContext.jsx";
+import { capitalize } from "../utils/format.js";
+import { formatPickup } from "../utils/pickup.js";
 import "./OrderConfirmation.css";
-
-function formatPickupWindow(start, end) {
-  const options = { hour: "numeric", minute: "2-digit" };
-  const startDate = new Date(start);
-  const endDate = new Date(end);
-  const date = startDate.toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-  });
-  return `${date}, ${startDate.toLocaleTimeString("en-US", options)}–${endDate.toLocaleTimeString("en-US", options)}`;
-}
 
 export default function OrderConfirmation() {
   const { orderId } = useParams();
@@ -23,65 +16,67 @@ export default function OrderConfirmation() {
 
   if (!order) {
     return (
-      <section className="confirmation-page confirmation-empty">
-        <p className="eyebrow">Cellar Deals</p>
-        <h1>Order Not Found</h1>
+      <div className="empty-state panel">
+        <h2>Order not found</h2>
         <p>There isn’t a saved order to show here.</p>
-        <Link className="confirmation-browse-link" to="/deals">
-          Browse Deals
+        <Link className="button button--primary" to="/deals">
+          Back to deals
         </Link>
-      </section>
+      </div>
     );
   }
 
   return (
-    <section className="confirmation-page">
-      <div className="confirmation-success-mark" aria-hidden="true">
-        ✓
-      </div>
-      <p className="eyebrow">Thanks for supporting less food waste</p>
-      <h1>Order Confirmed</h1>
-      <p className="confirmation-intro">Your order is ready to be picked up during your pickup window.</p>
-
-      <div className="order-code-card">
-        <span>Show this code at pickup</span>
-        <strong>{order.code}</strong>
-      </div>
-
-      <div className="confirmation-info">
-        <div>
-          <span>Pickup location</span>
-          <strong>{order.pickupLocation}</strong>
+    <div className="confirmation-wrap">
+      <section className="panel confirmation-card">
+        <div className="confirmation-check" aria-hidden="true">
+          <img src={checkIcon} alt="" width="36" height="36" />
         </div>
-        <div>
-          <span>Pickup window</span>
-          <strong>{formatPickupWindow(order.pickupStart, order.pickupEnd)}</strong>
-        </div>
-        <div>
-          <span>Total charged</span>
-          <strong>{formatPrice(order.total)}</strong>
-        </div>
-      </div>
+        <h1 className="confirmation-title">Order placed!</h1>
+        <p className="confirmation-subtitle">Show this code at the Cellar counter</p>
+        <p className="order-code" aria-label={`Order code ${order.code}`}>
+          {order.code}
+        </p>
 
-      <div className="confirmation-items">
-        <h2>Items in your order</h2>
-        {order.items.map((item) => (
-          <div className="confirmation-item" key={item.id}>
-            <img src={item.image} alt="" />
-            <span>{item.name} × {item.quantity}</span>
-            <strong>{formatPrice(item.unitPrice * item.quantity)}</strong>
+        {["preparing", "ready", "picked-up"].includes(order.status) && (
+          <StatusTracker status={order.status} />
+        )}
+
+        <div className="confirmation-pickup">
+          <p className="confirmation-pickup-time">
+            <img src={clockIcon} alt="" width="18" height="18" />
+            {capitalize(`pick up ${formatPickup(order.pickupStart, order.pickupEnd)}`)}
+          </p>
+          <p className="confirmation-pickup-note">
+            Unclaimed orders go back on sale and your points are refunded.
+          </p>
+        </div>
+
+        <div className="confirmation-items">
+          {order.items.map((item) => (
+            <div className="confirmation-line" key={item.id}>
+              <span>
+                {item.quantity} × {item.name}
+              </span>
+              <strong>{formatPrice(item.unitPrice * item.quantity)}</strong>
+            </div>
+          ))}
+          <hr className="divider" />
+          <div className="confirmation-line confirmation-total">
+            <span>Paid with dining points</span>
+            <strong>{formatPrice(order.total)}</strong>
           </div>
-        ))}
-      </div>
+        </div>
 
-      <div className="confirmation-links">
-        <Link className="confirmation-browse-link" to="/deals">
-          Browse More Deals
-        </Link>
-        <Link className="confirmation-orders-link" to="/orders">
-          View My Orders
-        </Link>
-      </div>
-    </section>
+        <div className="confirmation-actions">
+          <Link className="button button--primary" to="/orders">
+            View my orders
+          </Link>
+          <Link className="button button--secondary" to="/deals">
+            Back to deals
+          </Link>
+        </div>
+      </section>
+    </div>
   );
 }
