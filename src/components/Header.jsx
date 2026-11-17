@@ -43,6 +43,10 @@ export default function Header() {
           <span className="points-pill-value">{formatPrice(balance)}</span>
         </Link>
 
+        <Link className="icon-button icon-button--dark" to="/profile" aria-label="Account">
+          <img src={userIcon} alt="" width="22" height="22" />
+        </Link>
+
         <Link
           className="icon-button icon-button--outline"
           to="/cart"
@@ -50,10 +54,6 @@ export default function Header() {
         >
           <img src={cartIcon} alt="" width="22" height="22" />
           {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
-        </Link>
-
-        <Link className="icon-button icon-button--dark" to="/profile" aria-label="Profile">
-          <img src={userIcon} alt="" width="22" height="22" />
         </Link>
       </div>
     </header>
