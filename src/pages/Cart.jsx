@@ -36,12 +36,15 @@ export default function Cart() {
   );
   const [error, setError] = useState("");
   const [fundsModal, setFundsModal] = useState(null);
+  const [placing, setPlacing] = useState(false);
 
   const savings = Math.round((cartSubtotal - cartTotal) * 100) / 100;
   const balanceAfter = balance - cartTotal;
 
-  function handleCheckout() {
-    const result = checkout(pickupWindows.find((window) => window.id === pickupId));
+  async function handleCheckout() {
+    setPlacing(true);
+    const result = await checkout(pickupWindows.find((window) => window.id === pickupId));
+    setPlacing(false);
     if (result.success) {
       navigate(`/order-confirmation/${result.order.id}`);
       return;
@@ -168,8 +171,9 @@ export default function Cart() {
               type="button"
               className="button button--primary button--block"
               onClick={handleCheckout}
+              disabled={placing}
             >
-              Buy now · {formatPrice(cartTotal)}
+              {placing ? "Placing order…" : `Buy now · ${formatPrice(cartTotal)}`}
             </button>
 
             <div className="summary-row summary-note">

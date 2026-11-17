@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Modal from "../components/Modal.jsx";
 import StatusTracker from "../components/StatusTracker.jsx";
 import Tag from "../components/Tag.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 import { ACTIVE_STATUSES, formatPrice, useCart } from "../context/CartContext.jsx";
 import { capitalize, formatRelativeDay } from "../utils/format.js";
 import { formatPickup } from "../utils/pickup.js";
@@ -67,7 +68,10 @@ function OrderCard({ order, onCancel, onBuyAgain }) {
 
 export default function MyOrders() {
   const navigate = useNavigate();
-  const { orders, cancelOrder, buyAgain } = useCart();
+  const { user } = useAuth();
+  const { orders: allOrders, cancelOrder, buyAgain } = useCart();
+  // Staff can read every order, but this page only lists your own.
+  const orders = allOrders.filter((order) => order.userId === user.id);
   const [view, setView] = useState("current");
   const [cancelling, setCancelling] = useState(null);
   const [error, setError] = useState("");
@@ -75,8 +79,8 @@ export default function MyOrders() {
   const current = orders.filter((order) => ACTIVE_STATUSES.includes(order.status));
   const past = orders.filter((order) => !ACTIVE_STATUSES.includes(order.status));
 
-  function confirmCancel() {
-    const result = cancelOrder(cancelling.id);
+  async function confirmCancel() {
+    const result = await cancelOrder(cancelling.id);
     setError(result.success ? "" : result.error);
     setCancelling(null);
   }

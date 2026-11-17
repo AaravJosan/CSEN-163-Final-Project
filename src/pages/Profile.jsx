@@ -15,7 +15,7 @@ export default function Profile() {
   const [showFunds, setShowFunds] = useState(false);
   const [avatarFailed, setAvatarFailed] = useState(false);
   const activeOrders = orders.filter(
-    (order) => (order.userId ?? user?.id) === user?.id && ACTIVE_STATUSES.includes(order.status),
+    (order) => order.userId === user?.id && ACTIVE_STATUSES.includes(order.status),
   ).length;
 
   async function handleSignOut() {

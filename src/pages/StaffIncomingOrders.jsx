@@ -15,6 +15,7 @@ export default function StaffIncomingOrders() {
   const { orders, advanceOrderStatus } = useCart();
   const [lookup, setLookup] = useState("");
   const [error, setError] = useState("");
+  const [busyId, setBusyId] = useState(null);
 
   const code = lookup.trim().toUpperCase();
   const incoming = orders
@@ -22,8 +23,10 @@ export default function StaffIncomingOrders() {
     .filter((order) => !code || order.code.includes(code))
     .sort((a, b) => new Date(a.pickupStart) - new Date(b.pickupStart));
 
-  function handleAdvance(orderId) {
-    const result = advanceOrderStatus(orderId);
+  async function handleAdvance(orderId) {
+    setBusyId(orderId);
+    const result = await advanceOrderStatus(orderId);
+    setBusyId(null);
     setError(result.success ? "" : result.error);
   }
 
@@ -76,6 +79,7 @@ export default function StaffIncomingOrders() {
                   type="button"
                   className="button button--primary"
                   onClick={() => handleAdvance(order.id)}
+                  disabled={busyId === order.id}
                 >
                   {NEXT_ACTION[order.status]}
                 </button>

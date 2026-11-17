@@ -8,9 +8,12 @@ export default function AddFundsModal({ onClose, message }) {
   const { balance, addFunds } = useCart();
   const [amount, setAmount] = useState(25);
   const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
 
-  function handleConfirm() {
-    const result = addFunds(amount);
+  async function handleConfirm() {
+    setBusy(true);
+    const result = await addFunds(amount);
+    setBusy(false);
     if (result.success) onClose(true);
     else setError(result.error);
   }
@@ -24,8 +27,8 @@ export default function AddFundsModal({ onClose, message }) {
           <button type="button" className="button button--secondary" onClick={() => onClose(false)}>
             Cancel
           </button>
-          <button type="button" className="button button--primary" onClick={handleConfirm}>
-            Add {formatPrice(amount).replace(".00", "")}
+          <button type="button" className="button button--primary" onClick={handleConfirm} disabled={busy}>
+            {busy ? "Adding…" : `Add ${formatPrice(amount).replace(".00", "")}`}
           </button>
         </>
       }
