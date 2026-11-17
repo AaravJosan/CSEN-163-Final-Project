@@ -1,5 +1,5 @@
-import { Navigate, Route, Routes } from "react-router-dom";
-import Navbar from "./components/Navbar.jsx";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import Header from "./components/Header.jsx";
 import BrowseDeals from "./pages/BrowseDeals.jsx";
 import Cart from "./pages/Cart.jsx";
 import Login from "./pages/Login.jsx";
@@ -12,13 +12,18 @@ import StaffInventory from "./pages/StaffInventory.jsx";
 import StaffItemEditor from "./pages/StaffItemEditor.jsx";
 
 export default function App() {
+  const location = useLocation();
+
+  if (location.pathname === "/login") {
+    return <Login />;
+  }
+
   return (
     <>
-      <Navbar />
+      <Header />
       <main className="page-content">
         <Routes>
-          <Route path="/" element={<Navigate to="/deals" replace />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/deals" element={<BrowseDeals />} />
           <Route path="/products/:id" element={<ProductDetails />} />
           <Route path="/cart" element={<Cart />} />
