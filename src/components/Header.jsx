@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import cartIcon from "../assets/icons/cart.svg";
 import leafIcon from "../assets/icons/logo-leaf.svg";
 import searchIcon from "../assets/icons/search.svg";
@@ -9,7 +9,7 @@ import { ACTIVE_STATUSES, formatPrice, useCart } from "../context/CartContext.js
 
 export default function Header() {
   const { balance, cartCount, orders } = useCart();
-  const { user, avatarUrl, displayName } = useAuth();
+  const { user, profile, avatarUrl, displayName } = useAuth();
   const [avatarFailed, setAvatarFailed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -119,6 +119,16 @@ export default function Header() {
           {cartCount > 0 && <span className={`cart-badge${bump ? " cart-badge--bump" : ""}`}>{cartCount}</span>}
         </Link>
       </div>
+      {profile?.isStaff && (
+        <nav className="staff-nav" aria-label="Staff tools">
+          <div className="staff-nav-inner">
+            <span className="staff-nav-label">Staff</span>
+            <NavLink to="/staff/orders">Incoming orders</NavLink>
+            <NavLink to="/staff/inventory">Inventory</NavLink>
+            <NavLink to="/staff/items/new">Add item</NavLink>
+          </div>
+        </nav>
+      )}
     </header>
   );
 }
