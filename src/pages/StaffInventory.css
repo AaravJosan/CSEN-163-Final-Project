@@ -157,6 +157,39 @@
   }
 }
 
+.staff-order--pending > :not(.staff-order-foot),
+.staff-order--pending .staff-order-foot strong {
+  opacity: 0.5;
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  color: #fff;
+  background: var(--ink);
+  box-shadow: var(--shadow-modal);
+  font-size: 15px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.toast button {
+  border: 0;
+  padding: 0;
+  color: #8fe0b5;
+  background: none;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .staff-head-row {
   display: flex;
   flex-wrap: wrap;
