@@ -5,6 +5,7 @@ import RequireAuth from "./components/RequireAuth.jsx";
 import RequireStaff from "./components/RequireStaff.jsx";
 import BrowseDeals from "./pages/BrowseDeals.jsx";
 import Cart from "./pages/Cart.jsx";
+import Help from "./pages/Help.jsx";
 import Login from "./pages/Login.jsx";
 import MyOrders from "./pages/MyOrders.jsx";
 import OrderConfirmation from "./pages/OrderConfirmation.jsx";
@@ -37,6 +38,7 @@ export default function App() {
             />
             <Route path="/orders" element={<MyOrders />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/help" element={<Help />} />
             <Route
               path="/staff/inventory"
               element={
