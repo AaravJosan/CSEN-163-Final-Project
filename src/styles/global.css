@@ -302,6 +302,13 @@ p {
   font-weight: 700;
 }
 
+.chip-divider {
+  align-self: stretch;
+  width: 1px;
+  margin: 4px 4px;
+  background: var(--line);
+}
+
 /* Buttons */
 .button {
   display: inline-flex;

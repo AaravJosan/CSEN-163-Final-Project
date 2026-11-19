@@ -10,7 +10,7 @@ import "./BrowseDeals.css";
 
 const PAGE_SIZE = 8;
 const DAY_MS = 24 * 60 * 60 * 1000;
-const FILTERS = ["All", ...productCategories, "Under $5"];
+const FILTERS = ["All", ...productCategories];
 const SORTS = {
   expiring: {
     label: "Expiring soonest",
@@ -27,18 +27,32 @@ const SORTS = {
   name: { label: "Name: A to Z", compare: (a, b) => a.name.localeCompare(b.name) },
 };
 
-function matchesFilter(product, filter) {
-  if (filter === "All") return true;
-  if (filter === "Under $5") return product.discountedPrice < 5;
-  return product.category === filter;
+function matchesFilter(product, filter, underFive) {
+  if (underFive && product.discountedPrice >= 5) return false;
+  return filter === "All" || product.category === filter;
 }
 
 export default function BrowseDeals() {
   const { inventory } = useCart();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const search = (searchParams.get("q") ?? "").trim().toLowerCase();
-  const [filter, setFilter] = useState("All");
-  const [sort, setSort] = useState("expiring");
+  // Filter and sort live in the URL so Back from a product restores the same view.
+  const filter = FILTERS.includes(searchParams.get("cat")) ? searchParams.get("cat") : "All";
+  const underFive = searchParams.get("price") === "under5";
+  const sort = SORTS[searchParams.get("sort")] ? searchParams.get("sort") : "expiring";
+
+  function updateParams(changes) {
+    const next = new URLSearchParams(searchParams);
+    Object.entries(changes).forEach(([key, value]) => {
+      if (value === null) next.delete(key);
+      else next.set(key, value);
+    });
+    setSearchParams(next, { replace: true });
+  }
+
+  function setSort(value) {
+    updateParams({ sort: value === "expiring" ? null : value });
+  }
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const allItemsRef = useRef(null);
 
@@ -65,7 +79,7 @@ export default function BrowseDeals() {
   const allItems = useMemo(
     () =>
       available
-        .filter((product) => matchesFilter(product, filter))
+        .filter((product) => matchesFilter(product, filter, underFive))
         .filter(
           (product) =>
             !search ||
@@ -74,7 +88,7 @@ export default function BrowseDeals() {
               .includes(search),
         )
         .sort(SORTS[sort].compare),
-    [available, filter, search, sort],
+    [available, filter, underFive, search, sort],
   );
 
   function scrollToAllItems() {
@@ -82,8 +96,19 @@ export default function BrowseDeals() {
   }
 
   function chooseFilter(value) {
-    setFilter(value);
+    updateParams({ cat: value === "All" ? null : value });
     setVisibleCount(PAGE_SIZE);
+  }
+
+  function toggleUnderFive() {
+    updateParams({ price: underFive ? null : "under5" });
+    setVisibleCount(PAGE_SIZE);
+  }
+
+  function showAllDeals() {
+    updateParams({ cat: null, price: null, sort: null });
+    setVisibleCount(PAGE_SIZE);
+    scrollToAllItems();
   }
 
   return (
@@ -101,11 +126,7 @@ export default function BrowseDeals() {
               <button
                 type="button"
                 className="button button--secondary hero-button"
-                onClick={() => {
-                  setSort("expiring");
-                  chooseFilter("All");
-                  scrollToAllItems();
-                }}
+                onClick={showAllDeals}
               >
                 See today’s deals
               </button>
@@ -127,11 +148,7 @@ export default function BrowseDeals() {
                 <button
                   type="button"
                   className="text-link"
-                  onClick={() => {
-                    setSort("expiring");
-                    chooseFilter("All");
-                    scrollToAllItems();
-                  }}
+                  onClick={showAllDeals}
                 >
                   View all →
                 </button>
@@ -165,18 +182,29 @@ export default function BrowseDeals() {
         </div>
 
         <div className="browse-controls">
-          <div className="chip-row" role="group" aria-label="Filter items">
-            {FILTERS.map((value) => (
-              <button
-                key={value}
-                type="button"
-                className={`chip${filter === value ? " chip--selected" : ""}`}
-                aria-pressed={filter === value}
-                onClick={() => chooseFilter(value)}
-              >
-                {value}
-              </button>
-            ))}
+          <div className="chip-row">
+            <div className="chip-row" role="group" aria-label="Category">
+              {FILTERS.map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  className={`chip${filter === value ? " chip--selected" : ""}`}
+                  aria-pressed={filter === value}
+                  onClick={() => chooseFilter(value)}
+                >
+                  {value}
+                </button>
+              ))}
+            </div>
+            <span className="chip-divider" aria-hidden="true" />
+            <button
+              type="button"
+              className={`chip${underFive ? " chip--selected" : ""}`}
+              aria-pressed={underFive}
+              onClick={toggleUnderFive}
+            >
+              Under $5
+            </button>
           </div>
           <label className="sort-select">
             <span className="sort-label">Sort:</span>
