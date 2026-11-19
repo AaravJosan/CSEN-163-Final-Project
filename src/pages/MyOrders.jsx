@@ -120,7 +120,7 @@ export default function MyOrders() {
           aria-pressed={view === "past"}
           onClick={() => setView("past")}
         >
-          Past
+          Past ({past.length})
         </button>
       </div>
 
@@ -140,14 +140,16 @@ export default function MyOrders() {
             (current.length > 0 ? (
               renderOrders(current)
             ) : (
-              <p className="orders-none">No orders waiting for pickup.</p>
+              <p className="orders-none">
+                No orders waiting for pickup.{" "}
+                {past.length > 0 && (
+                  <button type="button" className="text-link" onClick={() => setView("past")}>
+                    See past orders
+                  </button>
+                )}
+              </p>
             ))}
-          {past.length > 0 && (
-            <>
-              {view === "current" && <h2 className="orders-subtitle">Past orders</h2>}
-              {renderOrders(past)}
-            </>
-          )}
+          {view === "past" && past.length > 0 && renderOrders(past)}
           {view === "past" && past.length === 0 && (
             <p className="orders-none">No past orders yet.</p>
           )}
