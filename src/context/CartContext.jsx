@@ -218,6 +218,19 @@ export function CartProvider({ children }) {
     return updateOrder(api.advanceOrderStatus, orderId);
   }
 
+  async function saveProduct(product, isNew) {
+    try {
+      const saved = await api.saveProduct(product, isNew);
+      setInventory((current) =>
+        isNew ? [...current, saved] : current.map((item) => (item.id === saved.id ? saved : item)),
+      );
+      reload().catch(() => {});
+      return { success: true, product: saved };
+    } catch (error) {
+      return { success: false, error: friendlyError(error, "Couldn’t save this item. Check the fields and try again.") };
+    }
+  }
+
   // Adds an earlier order's items back to the cart, as many as are still in stock.
   function buyAgain(order) {
     let nextCart = [...cart];
@@ -281,6 +294,7 @@ export function CartProvider({ children }) {
         checkout,
         cancelOrder,
         advanceOrderStatus,
+        saveProduct,
         buyAgain,
       }}
     >

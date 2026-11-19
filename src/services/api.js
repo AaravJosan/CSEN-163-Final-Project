@@ -79,3 +79,26 @@ export async function addFunds(amount) {
 export async function releaseUnclaimedOrders() {
   return callFunction("release_unclaimed_orders");
 }
+
+// Staff only (the database's row policies check this). `isNew` inserts a row.
+export async function saveProduct(product, isNew) {
+  const row = {
+    name: product.name,
+    category: product.category,
+    kind: product.kind,
+    description: product.description,
+    original_price: product.originalPrice,
+    price: product.discountedPrice,
+    stock: product.stock,
+    best_by: product.bestBy,
+    tag_label: product.tag.label,
+    tag_tone: product.tag.tone,
+    allergens: product.allergens,
+  };
+  const query = isNew
+    ? supabase.from("products").insert({ id: product.id, ...row })
+    : supabase.from("products").update(row).eq("id", product.id);
+  const { data, error } = await query.select().single();
+  if (error) throw new Error(error.message);
+  return toProduct(data);
+}
