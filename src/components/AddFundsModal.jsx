@@ -4,9 +4,14 @@ import Modal from "./Modal.jsx";
 
 const AMOUNTS = [10, 25, 50, 100];
 
-export default function AddFundsModal({ onClose, message }) {
+// shortfall: how much more the student needs; the smallest amount that covers it
+// is picked for them. resume: the dialog was opened by Buy now, so the order is
+// placed again right after the top-up.
+export default function AddFundsModal({ onClose, message, shortfall = 0, resume = false }) {
   const { balance, addFunds } = useCart();
-  const [amount, setAmount] = useState(25);
+  const [amount, setAmount] = useState(
+    () => (shortfall > 0 ? AMOUNTS.find((value) => value >= shortfall) ?? AMOUNTS.at(-1) : 25),
+  );
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -28,7 +33,9 @@ export default function AddFundsModal({ onClose, message }) {
             Cancel
           </button>
           <button type="button" className="button button--primary" onClick={handleConfirm} disabled={busy}>
-            {busy ? "Adding…" : `Add ${formatPrice(amount).replace(".00", "")}`}
+            {busy
+              ? "Adding…"
+              : `Add ${formatPrice(amount).replace(".00", "")}${resume ? " and place order" : ""}`}
           </button>
         </>
       }
@@ -36,6 +43,7 @@ export default function AddFundsModal({ onClose, message }) {
       {message && <p className="form-error" role="alert">{message}</p>}
       <p className="modal-text">
         Top up your dining points. Current balance: {formatPrice(balance)}.
+        {shortfall > 0 && !message && ` You need ${formatPrice(shortfall)} more for this order.`}
       </p>
       <div className="chip-row" role="radiogroup" aria-label="Amount to add">
         {AMOUNTS.map((value) => (
@@ -48,6 +56,7 @@ export default function AddFundsModal({ onClose, message }) {
             onClick={() => setAmount(value)}
           >
             ${value}
+            {shortfall > 0 && value < shortfall && <span className="visually-hidden"> (not enough)</span>}
           </button>
         ))}
       </div>
