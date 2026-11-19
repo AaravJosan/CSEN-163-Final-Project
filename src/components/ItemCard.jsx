@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import plusIcon from "../assets/icons/plus-white.svg";
 import { formatPrice, useCart } from "../context/CartContext.jsx";
@@ -9,14 +9,19 @@ import "./ItemCard.css";
 
 export default function ItemCard({ product }) {
   const { addToCart, cartItems } = useCart();
-  const [feedback, setFeedback] = useState("");
+  const [feedback, setFeedback] = useState(null);
+  const timer = useRef(null);
   const inCart = cartItems.find((item) => item.productId === product.id)?.quantity ?? 0;
   const soldOut = product.stock === 0;
+  const allInCart = !soldOut && inCart >= product.stock;
+
+  useEffect(() => () => window.clearTimeout(timer.current), []);
 
   function handleAdd() {
     const result = addToCart(product.id);
-    setFeedback(result.success ? "Added to cart" : result.error);
-    window.setTimeout(() => setFeedback(""), 2000);
+    setFeedback(result.success ? { ok: true, text: "Added" } : { ok: false, text: result.error });
+    window.clearTimeout(timer.current);
+    timer.current = window.setTimeout(() => setFeedback(null), 3500);
   }
 
   return (
@@ -34,7 +39,11 @@ export default function ItemCard({ product }) {
           <Tag tone={soldOut ? "neutral" : product.tag.tone}>
             {soldOut ? "Sold out" : product.tag.label}
           </Tag>
-          <span className="item-card-stock">{product.stock} left</span>
+          {!soldOut && (
+            <span className="item-card-stock">
+              {allInCart ? "All in your cart" : `${product.stock} left`}
+            </span>
+          )}
         </div>
         <h3 className="item-card-name">
           <Link to={`/products/${product.id}`} onClick={() => saveBrowseScrollPosition(window.scrollY)}>
@@ -49,15 +58,31 @@ export default function ItemCard({ product }) {
           <button
             type="button"
             className="add-button"
-            aria-label={`Add ${product.name} to cart`}
-            disabled={soldOut || inCart >= product.stock}
+            aria-label={
+              soldOut
+                ? `${product.name} is sold out`
+                : allInCart
+                  ? `All ${product.name} are in your cart`
+                  : `Add ${product.name} to cart`
+            }
+            title={soldOut ? "Sold out" : allInCart ? "All in your cart" : "Add to cart"}
+            disabled={soldOut || allInCart}
             onClick={handleAdd}
           >
             <img src={plusIcon} alt="" width="18" height="18" />
           </button>
         </div>
-        <p className="item-card-feedback" role="status">
-          {feedback}
+        <p
+          className={`item-card-feedback${feedback && !feedback.ok ? " item-card-feedback--error" : ""}`}
+          role="status"
+        >
+          {feedback?.text}
+          {feedback?.ok && (
+            <>
+              {" · "}
+              <Link to="/cart">View cart</Link>
+            </>
+          )}
         </p>
       </div>
     </article>

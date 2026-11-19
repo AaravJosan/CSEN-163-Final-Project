@@ -111,3 +111,12 @@
   background: var(--surface);
   box-shadow: var(--shadow-card);
 }
+
+.item-card-feedback a {
+  color: inherit;
+  font-weight: 700;
+}
+
+.item-card-feedback--error {
+  color: var(--danger);
+}
