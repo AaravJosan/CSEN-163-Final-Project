@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { friendlyError } from "../utils/errors.js";
 import { supabase } from "../services/supabaseClient.js";
 
 const AuthContext = createContext(null);
@@ -43,7 +44,7 @@ export function AuthProvider({ children }) {
       .eq("id", user.id)
       .maybeSingle();
     if (error) {
-      setAuthError(error.message);
+      setAuthError(friendlyError(error, "Sign-in didn’t work. Try again."));
       return null;
     }
     if (!data) {
@@ -107,7 +108,7 @@ export function AuthProvider({ children }) {
         queryParams: { hd: "scu.edu", prompt: "select_account" },
       },
     });
-    if (error) setAuthError(error.message);
+    if (error) setAuthError(friendlyError(error, "Sign-in didn’t work. Try again."));
   }
 
   async function signOut() {

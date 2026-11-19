@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import * as api from "../services/api.js";
 import { supabase } from "../services/supabaseClient.js";
+import { friendlyError } from "../utils/errors.js";
 import { formatPrice, isExpired } from "../utils/format.js";
 import { useAuth } from "./AuthContext.jsx";
 
@@ -71,7 +72,7 @@ export function CartProvider({ children }) {
         await reload();
         if (active) setLoadError("");
       } catch (error) {
-        if (active) setLoadError(error.message);
+        if (active) setLoadError(friendlyError(error, "The deals couldn’t be loaded."));
       } finally {
         if (active) setLoading(false);
       }
@@ -80,7 +81,7 @@ export function CartProvider({ children }) {
     function scheduleReload() {
       window.clearTimeout(reloadTimer.current);
       reloadTimer.current = window.setTimeout(() => {
-        reload().catch((error) => setLoadError(error.message));
+        reload().catch((error) => setLoadError(friendlyError(error, "The deals couldn’t be loaded.")));
       }, 250);
     }
 
@@ -166,7 +167,7 @@ export function CartProvider({ children }) {
       await refreshProfile();
       return { success: true };
     } catch (error) {
-      return { success: false, error: error.message };
+      return { success: false, error: friendlyError(error, "Couldn’t add funds. Your balance hasn’t changed. Try again.") };
     }
   }
 
@@ -189,7 +190,10 @@ export function CartProvider({ children }) {
         };
       }
       reload().catch(() => {});
-      return { success: false, error: error.message };
+      return {
+        success: false,
+        error: friendlyError(error, "Couldn’t place your order. No points were taken. Try again."),
+      };
     }
   }
 
@@ -200,7 +204,7 @@ export function CartProvider({ children }) {
       reload().catch(() => {});
       return { success: true, order };
     } catch (error) {
-      return { success: false, error: error.message };
+      return { success: false, error: friendlyError(error, "Couldn’t update this order. Refresh the page and try again.") };
     }
   }
 
@@ -256,7 +260,10 @@ export function CartProvider({ children }) {
       value={{
         loading,
         loadError,
-        retryLoad: () => reload().then(() => setLoadError("")).catch((error) => setLoadError(error.message)),
+        retryLoad: () =>
+          reload()
+            .then(() => setLoadError(""))
+            .catch((error) => setLoadError(friendlyError(error, "The deals couldn’t be loaded."))),
         inventory,
         cartItems,
         cartCount,
