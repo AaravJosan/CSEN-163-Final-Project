@@ -67,10 +67,10 @@ export default function Login() {
             disabled={busy}
           >
             {redirecting
-              ? "Opening SCU sign-in…"
+              ? "Opening Google sign-in…"
               : loading
                 ? "Checking your session…"
-                : "Sign in with SCU SSO"}
+                : "Continue with your SCU Google account"}
           </button>
           <hr className="divider" />
           <p className="login-card-note">
