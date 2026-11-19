@@ -264,6 +264,87 @@ p {
   font-weight: 700;
 }
 
+.cart-badge--bump {
+  animation: badge-bump 0.45s ease;
+}
+
+@keyframes badge-bump {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.5); }
+  100% { transform: scale(1); }
+}
+
+.header-link {
+  position: relative;
+  flex-shrink: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.header-link:hover,
+.header-link--active {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.header-link-badge {
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  color: #fff;
+  background: var(--green);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.staff-nav {
+  border-top: 1px solid var(--line);
+  background: var(--surface-muted);
+}
+
+.staff-nav-inner {
+  display: flex;
+  align-items: center;
+  gap: 4px 20px;
+  flex-wrap: wrap;
+  width: min(100% - 48px, 1200px);
+  margin: 0 auto;
+  padding: 8px 0;
+  font-size: 14px;
+}
+
+.staff-nav-label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.staff-nav a {
+  padding: 4px 0;
+  border-bottom: 2px solid transparent;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.staff-nav a.active {
+  border-bottom-color: var(--green);
+  color: var(--green);
+}
+
+.chip-divider {
+  align-self: stretch;
+  width: 1px;
+  margin: 4px 4px;
+  background: var(--line);
+}
+
 /* Buttons */
 .button {
   display: inline-flex;
@@ -706,6 +787,14 @@ p {
     display: none;
   }
 
+  .header-link {
+    padding: 10px;
+  }
+
+  .staff-nav-inner {
+    width: calc(100% - 32px);
+  }
+
   .page-title {
     font-size: 28px;
   }
@@ -737,4 +826,20 @@ p {
   padding: 80px 24px;
   color: var(--muted);
   text-align: center;
+}
+
+/* Small phones: keep the header on one row; the leaf still links home. */
+@media (max-width: 430px) {
+  .logo {
+    margin-right: auto;
+  }
+
+  .logo-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
 }

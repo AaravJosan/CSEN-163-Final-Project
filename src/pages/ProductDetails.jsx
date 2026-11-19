@@ -65,7 +65,9 @@ export default function ProductDetails() {
           ← Back to deals
         </Link>
         <span>
-          · Deals / {product.category} / {product.name}
+          · <Link to="/deals">Deals</Link> /{" "}
+          <Link to={`/deals?cat=${encodeURIComponent(product.category)}`}>{product.category}</Link> /{" "}
+          <span aria-current="page">{product.name}</span>
         </span>
       </nav>
 
@@ -99,15 +101,23 @@ export default function ProductDetails() {
 
           <p className="product-description">{product.description}</p>
 
-          {product.allergens.length > 0 && (
-            <div className="tag-row" aria-label="Allergens">
-              {product.allergens.map((allergen) => (
-                <Tag tone="neutral" key={allergen}>
-                  Contains {allergen}
-                </Tag>
-              ))}
-            </div>
-          )}
+          <div className="product-allergens">
+            <p className="product-allergens-title">Allergens</p>
+            {product.allergens.length > 0 ? (
+              <div className="tag-row">
+                {product.allergens.map((allergen) => (
+                  <Tag tone="neutral" key={allergen}>
+                    Contains {allergen}
+                  </Tag>
+                ))}
+              </div>
+            ) : (
+              <p className="product-allergens-none">No common allergens</p>
+            )}
+            <p className="product-allergens-note">
+              Severe allergy? Ask Cellar staff before eating. Items are made in a shared kitchen.
+            </p>
+          </div>
 
           <div className="product-actions">
             <Stepper
@@ -150,7 +160,10 @@ export default function ProductDetails() {
             <img src={pinIcon} alt="" width="22" height="22" />
             <div>
               <p className="pickup-note-title">Pickup at the Cellar counter</p>
-              <p className="pickup-note-text">Benson Center · show your order code</p>
+              <p className="pickup-note-text">
+                Benson Center · show your order code ·{" "}
+                <Link className="text-link" to="/help">How pickup works</Link>
+              </p>
             </div>
           </div>
         </div>

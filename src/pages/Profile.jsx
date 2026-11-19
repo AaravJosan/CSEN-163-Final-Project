@@ -72,6 +72,10 @@ export default function Profile() {
             {activeOrders > 0 ? `${activeOrders} waiting for pickup` : "View history"} →
           </span>
         </Link>
+        <Link className="panel profile-link" to="/help">
+          <span>How Cellar Deals works</span>
+          <span className="profile-link-meta">Pickup, cancelling, refunds →</span>
+        </Link>
         {profile?.isStaff && (
           <>
             <Link className="panel profile-link" to="/staff/inventory">

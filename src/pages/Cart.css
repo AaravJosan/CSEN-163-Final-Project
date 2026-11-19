@@ -248,3 +248,15 @@
     width: auto;
   }
 }
+
+.pickup-warning {
+  margin-top: -6px;
+  padding: 10px 12px;
+  border: 1px solid var(--warn-line);
+  border-radius: 10px;
+  color: var(--warn-ink);
+  background: var(--warn-bg);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}
